@@ -1,0 +1,128 @@
+<!-- Minja Krivokapić 2022/0615 -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Izmena profila pacijenta</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: url("{% static 'photos/background.png' %}") no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+        .profile-container {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            max-width: 800px;
+            width: 100%;
+        }
+        .profile-photo img {
+            width: 220px;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #4CAF50;
+        }
+        form {
+            flex: 1;
+            font-size: 18px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            margin-top: 5px;
+        }
+        textarea {
+            resize: none;
+            height: 100px;
+        }
+        .btns {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .save-btn, .cancel-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .save-btn {
+            background: #0f7b8f;
+        }
+        .save-btn:hover {
+            background: #0c5f6f;
+        }
+        .cancel-btn {
+            background: darkred;
+        }
+        .cancel-btn:hover {
+            background: #a50000;
+        }
+    </style>
+</head>
+<body>
+    {% include '_header.html' %}
+    {% include '_menuPatient.html' %}
+
+    <main>
+        <div class="profile-container">
+            <div class="profile-photo">
+                    <img src="{{ patient.image.url }}" alt="{{ patient.name }}" style="max-width:200px;">
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label>Ime</label>
+                <input type="text" name="name" value="{{ patient.name }}" required>
+
+                <label>Prezime</label>
+                <input type="text" name="surname" value="{{ patient.surname }}" required>
+
+                <label>Email</label>
+                <input type="email" name="email" value="{{ patient.email }}" required>
+
+                <label>Telefon</label>
+                <input type="text" name="telephone" value="{{ patient.telephone }}" required>
+
+                <label for="image">Profilna slika</label>
+                <input type="file" name="image">
+
+                <div class="btns">
+                    <button type="submit" name="save" class="save-btn">Sacuvaj</button>
+                    <button type="submit" name="cancel" class="cancel-btn">Otkazi</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    {% include '_footer.html' %}
+</body>
+</html>
+

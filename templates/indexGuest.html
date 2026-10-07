@@ -1,0 +1,275 @@
+{% load static %}
+<!-- MAJA MILJUS  576/22 -->
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Pocetna</title>
+    <style>
+                html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: url("{% static 'photos/background.png' %}") no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .moto-bubble {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 25px;
+            background: rgba(0, 0, 0, 0.4); 
+            border-radius: 25px;
+            backdrop-filter: blur(6px); 
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .moto-bubble p {
+            font-style: italic;
+            font-size: 26px;
+            margin: 0;
+            color: #fffaf0;
+            text-shadow: 1px 1px 6px rgba(0,0,0,0.5);
+        }
+
+      .welcome-box {
+    padding: 150px 60px;
+    border-radius: 12px;
+}
+    
+
+       .arrow {
+            position: absolute;
+            top: 10px;         
+            right: 280px;       
+            display: flex;     
+            align-items: center;
+            gap: 8px;          
+            color: #0f7b8f;
+            font-weight: 500;
+            font-size: 1.2em;
+   
+        }
+
+        .arrow::after {
+            content: "âžś";       
+            font-size: 36px;
+        }
+
+        @keyframes glowPulse {
+            0% {
+                text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff, 0 0 40px #00d4ff;
+            }
+            50% {
+                text-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff, 0 0 80px #00ffff;
+            }
+            100% {
+                text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff, 0 0 40px #00d4ff;
+            }
+        }
+
+    .welcome-box h1 {
+        font-size: 100px;
+        margin: 0;
+        color: #fff;
+        animation: glowPulse 2.5s infinite;
+    }
+    
+    .services-section {
+    padding: -100px 10px;
+    background: rgba(255,255,255,0.05);
+    color: #0f7b8f;
+    text-align: center;
+    }
+
+    .services-header {
+        max-width: 800px;
+        margin: 0 auto 50px auto;
+    }
+
+    .section-subtitle {
+        text-transform: uppercase;
+        color: #0f7b8f;
+        letter-spacing: 2px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .section-title {
+        font-size: 3em;
+        margin: 0;
+    }
+
+    .services-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 60px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .service-item {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 30px;
+    }
+
+  
+    .service-text {
+        flex: 1 1 60%;
+        padding: 20px 25px;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(88, 118, 158, 0.5);
+        border: 2px solid #0f7b8f;
+        box-sizing: border-box; 
+    }
+    .service-text h3 {
+    font-size: 1.8em; 
+}
+    .service-text p {
+        font-size: 1.2em; 
+    }
+
+
+    .service-image {
+        flex: 1 1 35%; 
+    }
+
+    .service-image img {
+        width: 100%;
+        max-width: 250px; 
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+
+@media (max-width: 900px) {
+    .service-item {
+        flex-direction: column;
+    }
+    .service-text {
+        text-align: center !important;
+    }
+    .service-image {
+        flex: 1 1 100%;
+    }
+    .service-image img {
+        max-width: 80%;
+    }
+}
+.login-prompt {
+    display: inline-block;           
+    padding: 20px 50px;               
+    margin: 60px 0 40px 0;  
+    text-align: center;              
+    font-size: 2em;                  
+    font-weight: bold;               
+    color: #ffffff;                  
+    border: 3px solid #0f7b8f;      
+    border-radius: 12px;             
+    background: rgba(14, 80, 130, 0.6);  
+    box-shadow: 0 0 15px rgba(15,123,143,0.5); 
+    animation: glowBorder 2s infinite alternate; 
+}
+
+
+
+@keyframes glowBorder {
+    0% {
+        box-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff, 0 0 40px #00d4ff;
+        border-color: #00d4ff;
+    }
+    50% {
+        box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff, 0 0 80px #00ffff;
+        border-color: #00ffff;
+    }
+    100% {
+        box-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff, 0 0 40px #00d4ff;
+        border-color: #00d4ff;
+    }
+}
+
+
+
+</style>
+</head>
+<body>
+    {% include '_headerGuest.html' %}
+    {% include '_menuGuest.html' %}
+
+    <main>
+        <div class="welcome-box">
+            <h1>Dobrodosli u DentaSoft</h1>      
+        </div>
+    </main>
+           <section class="services-section">
+    <div class="services-header">
+        <p class="section-subtitle">Nase Usluge</p>
+        <h2 class="section-title">Intervencije koje radimo</h2>
+    </div>
+
+    <div class="services-grid">
+        <!-- Service Item -->
+        <div class="service-item">
+            <div class="service-text text-right">
+                <h3>Pregled i konsultacije</h3>
+                <p>Detaljan stomatoloski pregled i savetovanje za zdravlje Vasih zuba i desni.</p>
+            </div>
+            <div class="service-image">
+                <img src="{% static 'photos/pregled.png' %}" alt="Pregled" />
+            </div>
+        </div>
+
+        <div class="service-item">
+            <div class="service-image">
+                <img src="{% static 'photos/vadjenjeZuba.jpg' %}" alt="Vadjenje zuba" />
+            </div>
+            <div class="service-text text-left">
+                <h3>Vadjenje i lecenje zuba</h3>
+                <p>Bezbolno vadjenje i lecenje zuba, sa modernim tehnikama i opremom.</p>
+            </div>
+        </div>
+
+        <div class="service-item">
+            <div class="service-text text-right">
+                <h3>Ortodontski tretmani</h3>
+                <p>Ispravljanje zuba i vilice pomocu aparatica, za lep i zdrav osmeh.</p>
+            </div>
+            <div class="service-image">
+                <img src="{% static 'photos/ortodontija.jpg' %}" alt="Ortodontija" />
+            </div>
+        </div>
+
+        <div class="service-item">
+            <div class="service-image">
+                <img src="{% static 'photos/estetskaSto.jpg' %}" alt="Estetska stomatologija" />
+            </div>
+            <div class="service-text text-left">
+                <h3>Estetska stomatologija</h3>
+                <p>Izbeljivanje, fasete i korekcija osmeha za savrsenu estetiku.</p>
+            </div>
+        </div>
+    </div>
+    <div class="login-prompt">
+    <p>I jos mnogo toga! Prijavite se da rezervisete svoj tretman! </p>
+</div>
+</section>
+    {% include '_footer.html' %}
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!-- Aleksandar Pavlović 0093/2022 -->
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <title>{% trans "Prijava" %}</title>
+  <style>
+    :root {
+      --brand:#0f7b8f;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --border:#e5e7eb;
+      --shadow:0 10px 30px rgba(0,0,0,.12);
+      --link-light-purple:#a78bfa;
+      --link-hover:#7c3aed;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      background: url("{% static 'photos/background.png' %}") no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .glass {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 40px 30px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    h1 { margin-bottom: 20px; color: var(--brand); font-size: 2em; }
+    form { display: flex; flex-direction: column; gap: 16px; }
+    input, button { padding: 12px 14px; font-size: 1em; border-radius: 10px; border: 1px solid var(--border); }
+    button { background: var(--brand); color: #fff; font-weight: 700; cursor: pointer; border: 1px solid var(--brand); transition: transform .05s, background .2s; }
+    button:hover { background: #095960; }
+    button:active { transform: translateY(1px); }
+    p { margin: 8px 0; color: var(--muted); font-size: 0.95em; }
+    p a { color: var(--link-light-purple); font-weight: 600; text-decoration: none; transition: color 0.2s, text-shadow 0.2s; }
+    p a:hover { color: var(--link-hover); text-shadow: 0 0 4px rgba(167,139,250,0.7); }
+    .errorlist { color: red; font-size: 0.9em; margin: 0; padding: 0; list-style: none; text-align: left; }
+  </style>
+</head>
+<body>
+  <div class="glass">
+    <h1>{% trans "Prijava" %}</h1>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      {% for field in form %}
+        <div>
+          {{ field.label_tag }}
+          {{ field }} 
+          {% if field.help_text %}
+            <small style="color: var(--muted);">{{ field.help_text }}</small>
+          {% endif %}
+          {{ field.errors }}
+        </div>
+      {% endfor %}
+      <button type="submit">{% trans "Prijavi se" %}</button>
+    </form>
+    <p><a href="{% url 'users:password_reset' %}">{% trans "Zaboravljena lozinka?" %}</a></p>
+    <p>{% trans "Nemaš nalog?" %} <a href="{% url 'users:signup' %}">{% trans "Registruj se" %}</a></p>
+    <p><a href="{% url 'guest:guest' %}">← {% trans "Nazad na pocetnu" %}</a></p>
+  </div>
+</body>
+</html>

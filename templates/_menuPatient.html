@@ -1,0 +1,115 @@
+<!--Irina Majstorovic 0518/2022-->
+{% load static %}
+<div class="topbar">
+  
+
+  <button class="nav-toggle" type="button" onclick="toggleMenu()">☰</button>
+
+  <nav class="nav-pills" id="navLinks">
+    <a class="pill {% if request.path == '/index/' or request.path == '/index' %}active{% endif %}" href="/index">Pocetna</a>
+    <a class="pill {% if '/index/about' in request.path %}active{% endif %}" href="/index/about">O nama</a>
+    <a class="pill {% if '/index/book_int' in request.path %}active{% endif %}" href="/index/book_int">Zakazi intervenciju</a>
+    <a class="pill {% if '/patients/myInterventions' in request.path %}active{% endif %}" href="/patients/myInterventions">Rezervacije</a>
+    <a class="pill {% if '/patients/profile/karton' in request.path %}active{% endif %}" href="/patients/profile/karton">Moj karton</a>
+
+    {% if user.is_staff %}
+      <a class="pill admin {% if 'admin' in request.path or 'users/admin_dashboard' in request.path %}active{% endif %}"
+         href="{% url 'users:admin_dashboard' %}">
+        Admin panel
+      </a>
+    {% endif %}
+  </nav>
+</div>
+
+<style>
+  .topbar{
+    background: transparent;   
+    width:100%;
+    box-sizing:border-box;
+    display:flex;
+    align-items:center;
+    justify-content:center;    
+    padding:14px 26px;
+    gap:16px;
+    position:relative;
+  }
+
+  .nav-pills{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;              
+    justify-content:center;
+    flex:1;
+  }
+
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:10px 18px;
+    border-radius:999px;        
+    border:2px solid #0f7b8f;
+    color:#0f7b8f;
+    background:#fff;
+    text-decoration:none;
+    font-weight:600;
+    font-size:18px;
+    transition:transform .08s ease, background .15s ease, color .15s ease, box-shadow .15s ease;
+    white-space:nowrap;
+  }
+
+  .pill:hover{
+    transform:translateY(-1px);
+    box-shadow:0 6px 14px rgba(0,0,0,.08);
+  }
+
+  .pill.active{
+    background:#0f7b8f;
+    color:#fff;
+  }
+
+  .pill.admin{
+    border-color:#6a1b9a;
+    color:#6a1b9a;
+  }
+  .pill.admin.active{
+    background:#6a1b9a;
+    color:#fff;
+  }
+
+  .nav-toggle{
+    display:none;
+    border:none;
+    background:#0f7b8f;
+    color:#fff;
+    border-radius:12px;
+    padding:10px 12px;
+    font-size:20px;
+    cursor:pointer;
+  }
+
+  @media (max-width: 900px){
+    .nav-toggle{ display:block; }
+    .nav-pills{
+      display:none;
+      position:absolute;
+      top:64px;
+      left:0;
+      right:0;
+      background:#fff;
+      padding:16px 18px;
+      box-shadow:0 10px 25px rgba(0,0,0,.12);
+      justify-content:flex-start;
+      border-top:1px solid rgba(0,0,0,.06);
+    }
+    .nav-pills.show{ display:flex; }
+    .pill{ width:100%; justify-content:flex-start; }
+  }
+</style>
+
+<script>
+  function toggleMenu() {
+    document.getElementById("navLinks").classList.toggle("show");
+  }
+</script>

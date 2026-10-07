@@ -1,0 +1,380 @@
+<!-- Maja Miljuš 0576/2022 -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Zakazivanje</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: url("{% static 'photos/background.png' %}") no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .med-container {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+        }
+
+        .med-photo {
+            flex: 0 0 200px;
+        }
+
+        .med-photo img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #4CAF50;
+        }
+
+        .med-info {
+            flex: 1;
+            font-size: 20px;
+        }
+
+        .med-info h2 {
+            margin: 0 0 10px;
+        }
+
+        .med-description {
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            text-align: justify;
+            margin-top: 10px;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .contact {
+            margin-top: 15px;
+            font-size: 20px;
+        }
+
+        .form-container {
+            margin-top: 30px;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: bold;
+        }
+
+        select, input[type="date"], button, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 5px 15px;
+            font-size: 1.2em;
+            background: #0f7b8f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: darkred;
+        }
+
+        .star {
+            font-size: 28px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #ccc;
+            padding: 0;
+            margin: 0;
+            width: auto;
+            height: auto;
+            line-height: 1;
+        }
+
+        .rating {
+            margin: 10px 0;
+            display: flex;
+            gap: 5px;
+        }
+
+        .star.active {
+            color: gold;
+        }
+
+        .message {
+            background-color: green;
+            color: white;
+            margin-top: 10px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .messageError {
+            background-color: darkred;
+            color: white;
+            margin-top: 10px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .doctor-rating {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ffd400;
+            color: #000;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,.3);
+            font-size: 0.9em;
+        }
+       .comment-box {
+            padding: 6px 0;
+        }
+
+        .comment-row {
+            display: flex;          
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;   
+        }
+
+        .rating {
+            color: #f5b301;
+            font-weight: bold;
+            flex-shrink: 0;       
+        }
+
+        .comment-text {
+            white-space: normal;   
+            flex: 1;              
+            color: #333;
+        }
+
+        .date {
+            font-size: 0.85em;
+            color: #777;
+            flex-shrink: 0;
+        }
+        .comments-header {
+            margin: 15px 0;
+        }
+
+        .toggle-comments {
+            cursor: pointer;
+            font-weight: bold;
+            color: #0f7b8f;
+            user-select: none;
+        }
+
+        .toggle-comments:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    {% include '_header.html' %}
+    {% include '_menuPatient.html' %}
+
+    <main>
+        <div class="med-container">
+            <div class="med-photo">
+                <img src="{{ med.image }}" alt="{{ med.name }} {{ med.surname }}">
+            </div>
+
+            <div class="med-info">
+                <h2>{{ med.name }} {{ med.surname }}</h2>
+                <p class="med-description">{{ med.description|linebreaksbr }}</p>
+
+                <div class="contact">
+                    <p><b>Email</b><br> {{ med.email }}</p>
+                    <p><b>Telefon</b><br> {{ med.telephone }}</p>
+                </div>
+
+                <div class="form-container">
+                    <h3>Zakazivanje termina</h3>
+                    <form method="post" action="{% url 'patients:med' idMed %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="idMed" value="{{ idMed }}">
+                        <input type="hidden" name="idPat" value="{{ idPat }}">
+
+                        <label for="date">Izaberite datum</label>
+                        <input type="date"
+                            name="date"
+                            id="date"
+                            min="{{ startDate|date:'Y-m-d' }}"
+                            max="{{ endDate|date:'Y-m-d' }}"
+
+                            required>
+
+                        <label for="intervention">Izaberite intervenciju</label>
+                        <select name="intervention" id="intervention" required>
+                            <option value="" selected disabled>Izaberite intervenciju</option>
+                            {% for intervention in interventions %}
+                                <option value="{{ intervention.id }}">
+                                    {{ intervention.description }} ({{ intervention.duration }} min)
+                                </option>
+                            {% endfor %}
+                        </select>
+
+                     <label for="time">Izaberite vreme</label>
+                       <select name="time" id="time" required>
+                                {% if weekend %}
+                                    <option disabled selected>Vikend – nema termina</option>
+                                {% elif available %}
+                                    {% for t in available %}
+                                        <option value="{{ t }}">{{ t }}</option>
+                                    {% endfor %}
+                                {% else %}
+                                    <option disabled selected>Trenutno nema slobodnih termina</option>
+                                {% endif %}
+                        </select>
+
+                        {% if message %}
+                            <div class="{% if code == 0 %}message{% else %}messageError{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endif %}
+                        <button type="submit" id="submit">Potvrdi</button>
+                    </form>
+                    <div class="comments-header">
+                        <span id="toggle-comments" class="toggle-comments" title="Prikaži komentare">
+                             Prikazi komentare
+                        </span>
+                    </div>
+                    <div id="comments-container" style="display: none;">
+                        {% if comments %}
+                            {% for c in comments %}
+                                <div class="comment-box">
+                                    <div class="comment-row">
+                                        <span class="rating">
+                                            ★ {{ c.star|floatformat:1 }}
+                                        </span>
+
+                                        <span class="comment-text">
+                                            {{ c.comment }}
+                                        </span>
+
+                                        <span class="date">
+                                            {{ c.created_at|date:"d.m.Y" }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p>Nema komentara za ovog doktora.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+                
+            <span class="doctor-rating">
+                &#9733; {{ med.avgRateDisplay }}
+            </span>
+        </div>
+    </main>
+
+    {% include '_footer.html' %}
+    <script>
+        const toggleBtn = document.getElementById("toggle-comments");
+        const comments = document.getElementById("comments-container");
+
+        toggleBtn.addEventListener("click", () => {
+            if (comments.style.display === "none") {
+                comments.style.display = "block";
+                toggleBtn.textContent = "Sakrij komentare";
+            } else {
+                comments.style.display = "none";
+                toggleBtn.textContent = "Prikazi komentare";
+            }
+        });
+    </script>
+    <script>
+        const dateInput = document.getElementById("date");
+        const interventionSelect = document.getElementById("intervention");
+        const timeSelect = document.getElementById("time");
+        const doctorId = "{{ idMed }}";
+
+        function updateTimeSlots() {
+            const date = dateInput.value;
+            const interventionId = interventionSelect.value;
+
+            if (!date || !interventionId) {
+                timeSelect.innerHTML = '<option disabled selected>Prvo izaberite datum i intervenciju</option>';
+                return;
+            }
+
+           fetch(`/patients/get_available_times/?date=${date}&intervention=${interventionId}&doctor=${doctorId}`)
+                .then(response => response.json())
+                .then(data => {
+                    timeSelect.innerHTML = '';
+                    if (data.weekend) {
+                        timeSelect.innerHTML = '<option disabled selected>Vikend – nema termina</option>';
+                    } else if (data.available.length > 0) {
+                        data.available.forEach(slot => {
+                            const option = document.createElement('option');
+                            option.value = slot;
+                            option.textContent = slot;
+                            timeSelect.appendChild(option);
+                        });
+                    } else {
+                        timeSelect.innerHTML = '<option disabled selected>Nema slobodnih termina</option>';
+                    }
+                });
+        }
+
+        dateInput.addEventListener("change", updateTimeSlots);
+        interventionSelect.addEventListener("change", updateTimeSlots);
+    </script>
+   
+    <script>
+   
+    const messageDiv = document.querySelector('.message, .messageError');
+    if (messageDiv) {
+        
+        setTimeout(() => {
+            messageDiv.style.transition = "opacity 0.5s";
+            messageDiv.style.opacity = "0";
+            
+            setTimeout(() => messageDiv.remove(), 500);
+        }, 2000);
+    }
+</script>
+</body>
+</html>

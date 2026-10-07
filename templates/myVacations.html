@@ -1,0 +1,306 @@
+<!--Irina Majstorovic 0518/2022-->
+<!-- Minja Krivokapic 0615/2022 -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Moji odmori</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: url("{% static 'photos/background.png' %}") no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+
+        main.doctor-main {
+            flex: 1;
+            padding: 40px 20px 60px;
+        }
+
+        .vac-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0f7b8f;
+            margin-bottom: 6px;
+        }
+
+        .vac-subtitle {
+            text-align: center;
+            color: #555;
+            margin-bottom: 25px;
+        }
+
+        .vac-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+        }
+
+        .vac-btn-add {
+            padding: 8px 18px;
+            border-radius: 999px;
+            border: 2px solid #0f7b8f;
+            background: #0f7b8f;
+            color: #ffffff;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .vac-btn-add:hover {
+            background: #0d6777;
+        }
+
+        .filter-card {
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px 16px;
+            background: rgba(255,255,255,0.95);
+            padding: 15px 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: 600;
+            margin-right: 6px;
+            color: #0f7b8f;
+        }
+
+        select {
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            min-width: 120px;
+        }
+
+        .btn-primary,
+        .btn-secondary,
+        .btn-danger {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: #0f7b8f;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #0d6777;
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: #0f7b8f;
+            border: 1px solid #0f7b8f;
+        }
+
+        .btn-secondary:hover {
+            background: #e6f3f5;
+        }
+
+        .btn-danger {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background: #a52f23;
+        }
+
+        .table-wrapper {
+            background: rgba(255,255,255,0.95);
+            padding: 10px 15px 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: transparent;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #f4f4f4;
+        }
+
+        .declined { background-color: #ffcccc; }
+        .padding  { background-color: #e0e0e0; }
+        .approved { background-color: #ccffcc; }
+
+        @media (max-width: 900px) {
+            .filter-card {
+                width: 100%;
+            }
+        }
+        
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .filter-form {
+            margin: 0;
+        }
+
+        .btn-add-vacation {
+            padding: 10px 24px;
+            border-radius: 999px;
+            border: none;
+            background-color: #0f7b8f;
+            color: #fff;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-add-vacation:hover {
+            background-color: #0c6270;
+        }
+
+        @media (max-width: 768px) {
+            .filter-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    {% include '_headerDoctor.html' %}
+    {% include '_menuDoctor.html' %}
+
+    <main class="doctor-main">
+        <div class="vac-container">
+            <h1>Odmori</h1>
+            <p class="vac-subtitle">
+                Ovde mozes da pregledas svoje odobrene, odbijene i zahtevane odmore.
+            </p>
+
+            <div>
+
+            <form method="get" id="filterForm" class="filter-card">
+                <div>
+                    <label for="month">Mesec:</label>
+                    <select name="month" id="month">
+                        <option value="">Svi</option>
+                        {% for num, name in months %}
+                            <option value="{{ num }}" {% if num|stringformat:"s" == selectedMonth %}selected{% endif %}>
+                                {{ name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label for="year">Godina:</label>
+                    <select name="year" id="year">
+                        <option value="">Sve</option>
+                        {% for y in years %}
+                            <option value="{{ y }}" {% if y|stringformat:"s" == selectedYear %}selected{% endif %}>
+                                {{ y }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-primary">Filtriraj</button>
+                <button type="button"
+                        class="btn-secondary"
+                        onclick="window.location.href='{% url 'meds:myVacations' %}'">
+                    Prikazi sve
+                </button>
+            </form>
+            
+            
+                <a href="{% url 'meds:vacation' %}" class="vac-btn-add">+ Dodaj odmor</a>
+           
+            
+            </div>
+
+            <div class="table-wrapper">
+
+                <p style="margin-bottom: 10px;">
+                    Preostalo dana godisnjeg ({{ vac_year }}): <b>{{ vac_remaining }}</b> / {{ vac_total }}
+                </p>
+
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pocetak odmora</th>
+                            <th>Kraj odmora</th>
+                            <th>Status</th>
+                            <th>Otkazivanje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vacation in myVacations %}
+                            <tr
+                                {% if vacation.status == -1 %} class="declined"
+                                {% elif vacation.status == 0 %} class="padding"
+                                {% elif vacation.status == 1 %} class="approved"
+                                {% endif %}
+                            >
+                                <td>{{ vacation.startDate|date:"d.m.Y." }}</td>
+                                <td>{{ vacation.endDate|date:"d.m.Y." }}</td>
+                                <td>
+                                    {% if vacation.status == -1 %} Odbijen
+                                    {% elif vacation.status == 0 %} Na cekanju
+                                    {% elif vacation.status == 1 %} Odobren
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if vacation.status == 0 or vacation.status == 1 %}
+                                        <form method="post" action="{% url 'meds:deleteVacation' vacation.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn-danger">Otkazi</button>
+                                        </form>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4"><b>Nema unetih odmora.</b></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    {% include '_footer.html' %}
+</body>
+</html>

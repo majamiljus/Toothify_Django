@@ -1,0 +1,554 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="sr">
+    <!-- Maja Miljus 576/22-->
+     <!-- Minja Krivokapic 0615/2022 -->
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Zakazi{% endblock %}</title>
+    <style>
+        html, body {
+        margin: 0;
+        padding: 0;
+        }
+
+        body {
+            display: flex;           
+            flex-direction: column;  
+            min-height: 100vh;       
+            background: url("{% static 'photos/background.png' %}") no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            flex: 1;
+            display: block; 
+            padding: 40px;
+        }
+    
+        .date-container input[type="date"] {
+            padding: 12px 15px;       
+            font-size: 18px;          
+            border-radius: 8px;
+            border: 2px solid #3b558d;
+            background-color: #f0f0f0; 
+            color: #000;
+            cursor: pointer;
+        }
+        .date-container label {
+            font-size: 20px;
+            font-weight: bold;
+            color: #72176a;
+        }
+        
+        .time-container input[type="time"] {
+            padding: 12px 15px;            
+            font-size: 18px;               
+            border-radius: 8px;
+            border: 2px solid #3b558d;
+            background-color: #f0f0f0;     
+            color: #000;
+            cursor: pointer;
+        }
+        .time-container label {
+            font-size: 20px;
+            font-weight: bold;
+            color: #72176a;
+            margin-right: 10px;
+        }
+
+        
+        .bubble.selected {
+            background-color: #3b558d !important;
+            color: #fff;
+            transform: none; 
+            filter: brightness(1); 
+            transition: background 0.2s, filter 0.2s;
+        }
+        .book-container {
+            display: flex;
+            justify-content: center; 
+            margin-top: 20px;        
+            width: 100%;
+        }
+       .main-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; 
+            align-items: center;
+            height: calc(100vh - 80px); 
+            padding: 40px 0;
+        }
+
+        
+        .carousels-container {
+             display: flex;
+            align-items: center;  
+            justify-content: center;
+            gap: 50px;
+            padding: 40px;
+        }
+        .book-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 0; 
+        }
+       
+        #bookButton {
+            padding: 15px 40px;
+            font-size: 20px;
+            background-color: #555;   
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: not-allowed;
+            transition: all 0.2s ease;
+        }
+
+        #bookButton:enabled {
+            background-color: #3b558d;
+            cursor: pointer;
+        }
+
+        #bookButton:enabled:hover {
+            background-color: #2f426c;
+        }
+        .carousels-container {
+            display: flex;
+            align-items: flex-start; 
+            justify-content: center; 
+            gap: 50px; 
+            padding: 40px;
+        }
+        .carousel-wrapper, .doctor-carousel-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            height: 600px; 
+        }
+
+        .bubble-list.carousel, .doctor-bubble-list.carousel {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            height: 500px; 
+            overflow: hidden;
+            width: 500px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 15px;
+        }
+
+     
+        .bubble-list li.bubble, .doctor-bubble-list li.bubble {
+            padding: 20px;
+            border-radius: 25px;
+            font-size: 25px;
+            text-align: center;
+            color: #fff;
+            word-wrap: break-word;
+            height: 90px; 
+
+    
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
+        }
+
+   
+        .bubble-list li.bubble {
+            background-color: #b974b3; 
+        }
+
+        .doctor-bubble-list li.bubble {
+            background-color: #ff7f50; 
+        }
+        .carousel-btn, .doctor-carousel-btn {
+            background-color: #72176a;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 28px;
+            transition: background 0.2s;
+        }
+
+        
+        .carousel-wrapper .carousel-btn.prev,
+        .doctor-carousel-wrapper .doctor-carousel-btn.prev {
+            margin-bottom: auto; 
+        }
+
+        .carousel-wrapper .carousel-btn.next,
+        .doctor-carousel-wrapper .doctor-carousel-btn.next {
+            margin-top: auto; 
+        }
+
+        .carousel-btn:hover, .doctor-carousel-btn:hover {
+            background-color: #5a1354;
+        }
+
+        .carousel-btn:disabled, .doctor-carousel-btn:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+       .hidden-bubble {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+
+    </style>
+</head>
+<body>
+    {% include '_header.html' %}
+    {% include '_menuPatient.html' %}
+   <main class="main-wrapper">
+    <div class="carousels-container">
+       
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <input type="text" id="interventionSearch" placeholder="Pretraga intervencija" style="width: 150px; padding: 8px; font-size:16px;">
+            <div class="carousel-wrapper">
+                <button class="carousel-btn prev">&#9650;</button>
+                <ul class="bubble-list carousel">
+                    {% for intervention in interventions %}
+                      <li class="bubble"
+                        data-id="{{ intervention.id }}"
+                        data-level="{{ intervention.level }}"
+                        data-description="{{ intervention.description }}"
+                        data-duration="{{ intervention.duration }}">
+                        {{ intervention.description }} ({{ intervention.duration }} min) <br>
+                        {{ intervention.price|floatformat:0 }} RSD
+                    </li>
+                    {% endfor %}
+                </ul>
+                <button class="carousel-btn next">&#9660;</button>
+            </div>
+        </div>
+
+       
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div class="doctor-carousel-wrapper">
+                <button class="doctor-carousel-btn prev">&#9650;</button>
+                <ul class="doctor-bubble-list carousel">
+                    {% for doctor in doctors %}
+                       <li class="bubble" data-spec="{{ doctor.level_spec }}" data-id="{{ doctor.id }}">
+                            {{ doctor.name }} {{ doctor.surname }}<br>
+                            {{ doctor.description }} 
+                        </li>
+                    {% endfor %}
+                </ul>
+                <button class="doctor-carousel-btn next">&#9660;</button>
+            </div>
+            <input type="text" id="doctorSearch" placeholder="Pretraga doktora" style="width: 150px; padding: 8px; font-size:16px;">
+        </div>
+    </div>
+
+
+       
+        <div class="date-container">
+            <label for="appointmentDate">Izaberite datum:</label>
+           <input type="date" 
+                id="appointmentDate" 
+                min="{{ today_date }}" 
+                max="{{ max_date }}"
+                value="{{ today_date }}">
+        </div>
+
+      
+       <div class="time-container" style="margin-top: 15px;">
+            <label for="appointmentTime">Izaberite vreme:</label>
+            <select id="appointmentTime" disabled>
+                <option disabled selected>Prvo izaberite datum, doktora i intervenciju</option>
+            </select>
+        </div>
+
+
+        <div class="book-container">
+            <button id="bookButton" disabled>Zakazi</button>
+        </div>
+
+    </main>
+    {% include '_footer.html' %}
+    </body>
+
+
+   <script>
+function initCarouselWithSearch(wrapperSelector, listSelector, prevSelector, nextSelector, searchInputSelector, visibleCount) {
+    const wrapper = document.querySelector(wrapperSelector);
+    const list = wrapper.querySelector(listSelector);
+    let bubbles = Array.from(list.children);
+    const prevBtn = wrapper.querySelector(prevSelector);
+    const nextBtn = wrapper.querySelector(nextSelector);
+    const searchInput = document.querySelector(searchInputSelector);
+    let index = 0;
+
+    function update() {
+        bubbles.forEach((b, i) => {
+            b.style.display = (i >= index && i < index + visibleCount) ? 'block' : 'none';
+        });
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index + visibleCount >= bubbles.length;
+    }
+
+    prevBtn.addEventListener('click', () => {
+        if (index > 0) index--;
+        update();
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (index + visibleCount < bubbles.length) index++;
+        update();
+    });
+
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            const filter = searchInput.value.toLowerCase();
+            const allBubbles = Array.from(list.children);
+            const visibleBubbles = allBubbles.filter(b => b.textContent.toLowerCase().includes(filter));
+            bubbles = visibleBubbles;
+            index = 0;
+            update();
+        });
+    }
+
+    update(); 
+
+    return {
+        updateVisible: (newBubbles) => {
+            Array.from(list.children).forEach(b => b.style.display = 'none');
+            bubbles = newBubbles;
+            index = 0;
+            update();
+        }
+    };
+}
+
+function filterBubbles(bubbles, filterFn) {
+    return Array.from(bubbles).filter(filterFn);
+}
+
+const interventionsCarousel = initCarouselWithSearch(
+    '.carousel-wrapper',
+    '.bubble-list',
+    '.carousel-btn.prev',
+    '.carousel-btn.next',
+    '#interventionSearch',
+    4
+);
+
+const doctorsCarousel = initCarouselWithSearch(
+    '.doctor-carousel-wrapper',
+    '.doctor-bubble-list',
+    '.doctor-carousel-btn.prev',
+    '.doctor-carousel-btn.next',
+    '#doctorSearch',
+    4
+);
+
+document.addEventListener("DOMContentLoaded", function() {
+    const interventionBubbles = document.querySelectorAll(".bubble-list .bubble");
+    const doctorBubbles = document.querySelectorAll(".doctor-bubble-list .bubble");
+    const bookButton = document.getElementById('bookButton');
+    const appointmentDate = document.getElementById('appointmentDate');
+    const appointmentTime = document.getElementById('appointmentTime');
+
+    let selectedIntervention = null;
+    let selectedDoctor = null;
+
+
+    function resetFilter() {
+        doctorsCarousel.updateVisible(Array.from(doctorBubbles));
+        interventionsCarousel.updateVisible(Array.from(interventionBubbles));
+    }
+
+    function updateAvailableTimes() {
+        if (!selectedIntervention || !selectedDoctor) {
+            appointmentTime.innerHTML = '<option disabled selected>Prvo izaberite datum, doktora i intervenciju</option>';
+            appointmentTime.disabled = true; 
+            updateBookButton();
+            return;
+        }
+
+        const date = appointmentDate.value;
+        const doctorId = selectedDoctor.dataset.id;
+        const duration = selectedIntervention.dataset.duration;
+
+        appointmentTime.innerHTML = '<option disabled selected>Ucitavanje termina...</option>';
+        appointmentTime.disabled = true;
+
+        fetch(`/index/get_available_times/?date=${date}&doctor_id=${doctorId}&duration=${duration}`, {
+            headers: { "X-Requested-With": "XMLHttpRequest" }
+        })
+        .then(res => res.json())
+        .then(data => {
+            appointmentTime.innerHTML = '';
+            if (data.times && data.times.length > 0) {
+                data.times.forEach(slot => {
+                    const option = document.createElement('option');
+                    option.value = slot;
+                    option.textContent = slot;
+                    appointmentTime.appendChild(option);
+                });
+                appointmentTime.disabled = false;
+            } else {
+                appointmentTime.innerHTML = '<option disabled selected>Nema slobodnih termina</option>';
+                appointmentTime.disabled = true;
+            }
+            updateBookButton();
+        })
+        .catch(err => {
+            console.error(err);
+            appointmentTime.innerHTML = '<option disabled selected>Greska pri ucitavanju termina</option>';
+            appointmentTime.disabled = true;
+            updateBookButton();
+        });
+    }
+
+    function updateBookButton() {
+        const dateValue = appointmentDate.value;
+        const timeValue = appointmentTime.value;
+        let dateValid = false;
+        let timeValid = false;
+
+        if (dateValue) {
+            const selectedDate = new Date(dateValue);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            dateValid = selectedDate >= today;
+
+            if (dateValid && timeValue) {
+                const [hours, minutes] = timeValue.split(':').map(Number);
+                const selectedDateTime = new Date(selectedDate);
+                selectedDateTime.setHours(hours, minutes, 0, 0);
+                timeValid = selectedDateTime >= new Date();
+            }
+        }
+
+        bookButton.disabled = !(selectedIntervention && selectedDoctor && dateValid && timeValid);
+    }
+
+    // klik na intervenciju
+    interventionBubbles.forEach(bubble => {
+        bubble.addEventListener("click", () => {
+            const lvl = parseInt(bubble.dataset.level);
+
+            if (selectedIntervention === bubble) {
+                bubble.classList.remove("selected");
+                selectedIntervention = null;
+                resetFilter();
+            } else {
+                interventionBubbles.forEach(b => b.classList.remove("selected"));
+                selectedIntervention = bubble;
+                bubble.classList.add("selected");
+
+                const filteredDoctors = filterBubbles(doctorBubbles, doc => parseInt(doc.dataset.spec) >= lvl);
+                doctorsCarousel.updateVisible(filteredDoctors);
+            }
+
+            updateAvailableTimes();
+            updateBookButton();
+        });
+    });
+
+    // klik na doktora
+    doctorBubbles.forEach(bubble => {
+        bubble.addEventListener("click", () => {
+            const spec = parseInt(bubble.dataset.spec);
+
+            if (selectedDoctor === bubble) {
+                bubble.classList.remove("selected");
+                selectedDoctor = null;
+                resetFilter();
+            } else {
+                doctorBubbles.forEach(b => b.classList.remove("selected"));
+                selectedDoctor = bubble;
+                bubble.classList.add("selected");
+
+                const filteredInterventions = filterBubbles(interventionBubbles, interv => parseInt(interv.dataset.level) <= spec);
+                interventionsCarousel.updateVisible(filteredInterventions);
+            }
+
+            updateAvailableTimes();
+            updateBookButton();
+        });
+    });
+
+    appointmentDate.addEventListener("change", () => { updateAvailableTimes(); updateBookButton(); });
+    appointmentTime.addEventListener("change", updateBookButton);
+
+    //dugme zakazi
+    bookButton.addEventListener("click", function() {
+        if (!selectedIntervention || !selectedDoctor) return;
+
+        const data = new FormData();
+        data.append("intervention_desc", selectedIntervention.dataset.description);
+        data.append("intervention_duration", selectedIntervention.dataset.duration);
+        data.append("doctor_id", selectedDoctor.dataset.id);
+        data.append("date", appointmentDate.value);
+        data.append("time", appointmentTime.value);
+        console.log({
+            intervention_desc: selectedIntervention.dataset.description,
+            intervention_duration: selectedIntervention.dataset.duration,
+            doctor_id: selectedDoctor.dataset.id,
+            date: appointmentDate.value,
+            time: appointmentTime.value
+        });
+            fetch("{% url 'index:book_int' %}", {
+                method: "POST",
+                body: data,
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+            .then(res => res.json())
+            .then(resp => {
+                alert(resp.message);
+                location.reload();
+            })
+        
+            selectedIntervention = null;
+            selectedDoctor = null;
+
+        
+            interventionBubbles.forEach(b => b.classList.remove("selected"));
+            doctorBubbles.forEach(b => b.classList.remove("selected"));
+
+        
+            resetFilter();
+
+            appointmentDate.value = "";
+            appointmentTime.value = "";
+
+            bookButton.disabled = true;
+        })
+    
+    
+        // Search za intervencije
+        const interventionSearch = document.getElementById('interventionSearch');
+        interventionSearch.addEventListener('input', function() {
+            const filter = interventionSearch.value.toLowerCase();
+            const allBubbles = Array.from(document.querySelectorAll('.bubble-list li.bubble'));
+            const visibleBubbles = allBubbles.filter(b => b.textContent.toLowerCase().includes(filter));
+            interventionsCarousel.updateVisible(visibleBubbles); 
+        });
+
+        // Search za doktore
+        const doctorSearch = document.getElementById('doctorSearch');
+        doctorSearch.addEventListener('input', function() {
+            const filter = doctorSearch.value.toLowerCase();
+            const allBubbles = Array.from(document.querySelectorAll('.doctor-bubble-list li.bubble'));
+            const visibleBubbles = allBubbles.filter(b => b.textContent.toLowerCase().includes(filter));
+            doctorsCarousel.updateVisible(visibleBubbles); 
+        });
+
+});
+</script>
+
+</html>

@@ -1,0 +1,184 @@
+<!-- Minja Krivokapić 2022/0615 -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Profil doktora</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: url("{% static 'photos/background.png' %}") no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+        .profile-container {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            max-width: 800px;
+            width: 100%;
+        }
+        .profile-photo img {
+            width: 220px;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #4CAF50;
+        }
+        .profile-info {
+            align-items: center;
+            flex: 1;
+            font-size: 18px;
+        }
+        .profile-info h2 {
+            margin-bottom: 10px;
+            color: #0f7b8f;
+        }
+        .info-item {
+            margin: 8px 0;
+        }
+        .info-label {
+            font-weight: bold;
+        }
+        .edit-btn {
+            margin-top: 20px;
+            background: #0f7b8f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 25px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .edit-btn:hover {
+            background: darkred;
+        }
+        .comments-section {
+            margin-top: 25px;
+        }
+
+        .toggle-comments {
+            cursor: pointer;
+            font-weight: bold;
+            color: #0f7b8f;
+            user-select: none;
+        }
+
+        .toggle-comments:hover {
+            text-decoration: underline;
+        }
+
+        .comment-box {
+            padding: 6px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comment-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rating {
+            color: #f5b301;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .comment-text {
+            flex: 1;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+  {% include '_header.html' %}
+{% include '_menuDoctor.html' %}
+
+<main>
+    <div class="profile-container">
+        <div class="profile-photo">
+        {% if med.image and med.image.url != '/media/default.jpg' %}
+            <img src="{{ med.image.url }}" alt="{{ med.name }}" style="max-width:200px;">
+        {% else %}
+            <img src="{% static 'photos/default.jpg' %}" alt="{{ med.name }}" style="max-width:200px;">
+        {% endif %}
+
+         
+          
+        </div>
+        <div class="profile-info">
+            <h2>Profil doktora</h2>
+            <div class="info-item"><span class="info-label">Ime:</span> {{ med.name }}</div>
+            <div class="info-item"><span class="info-label">Prezime:</span> {{ med.surname }}</div>
+            <div class="info-item"><span class="info-label">Email:</span> {{ med.email }}</div>
+            <div class="info-item"><span class="info-label">Telefon:</span> {{ med.telephone }}</div>
+            <div class="info-item"><span class="info-label">Opis:</span> {{ med.description }}</div>
+            <div class="info-item"><span class="info-label">Stepen specijalizacije:</span> {{ med.level_spec }}</div>
+
+            <a href="{% url 'meds:editProfile' %}">
+                <button class="edit-btn">Izmeni podatke</button>
+            </a>
+            <div class="comments-section">
+            <span id="toggle-comments" class="toggle-comments">
+                 Prikazi komentare pacijenata
+            </span>
+
+            <div id="comments-container" style="display: none;">
+                {% if comments %}
+                    {% for c in comments %}
+                        <div class="comment-box">
+                            <div class="comment-row">
+                                <span class="rating">
+                                    â˜… {{ c.star|floatformat:1 }}
+                                </span>
+
+                                <span class="comment-text">
+                                    {{ c.comment }}
+                                </span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Nema komentara.</p>
+                {% endif %}
+            </div>
+        </div>
+        </div>
+    </div>
+</main>
+
+{% include '_footer.html' %}
+<script>
+    const toggleBtn = document.getElementById("toggle-comments");
+    const comments = document.getElementById("comments-container");
+
+    toggleBtn.addEventListener("click", () => {
+        if (comments.style.display === "none") {
+            comments.style.display = "block";
+            toggleBtn.textContent = " Sakrij komentare pacijenata";
+        } else {
+            comments.style.display = "none";
+            toggleBtn.textContent = " Prikazi komentare pacijenata";
+        }
+    });
+</script>
+</body>
+</html>

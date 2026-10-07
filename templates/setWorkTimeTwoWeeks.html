@@ -1,0 +1,130 @@
+<!--Irina Majstorovic 0518/2022-->
+<!-- Minja Krivokapic 0615/2022 -->
+{% load meds_extras %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <title>Radno vreme - 2 nedelje</title>
+  <style>
+    body {
+      margin: 0; padding: 0; min-height: 100vh;
+      display: flex; flex-direction: column;
+      background: url("{% static 'photos/background.png' %}") no-repeat center center fixed;
+      background-size: cover;
+      font-family: Arial, sans-serif;
+    }
+    main.doctor-main { flex: 1; padding: 40px 20px 60px; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    h1 { text-align: center; color: #0f7b8f; margin-bottom: 6px; }
+    .subtitle { text-align: center; color: #555; margin-bottom: 25px; }
+
+    .card {
+      background: rgba(255,255,255,0.95);
+      padding: 18px 20px;
+      border-radius: 20px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+    label { font-weight: 600; color: #0f7b8f; margin-right: 8px; }
+    select {
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      min-width: 180px;
+    }
+    .row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+    .btn {
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .btn-primary { background: #0f7b8f; color: #fff; }
+    .btn-primary:hover { background: #0d6777; }
+    .btn-secondary { background: #fff; color: #0f7b8f; border: 2px solid #0f7b8f; text-decoration: none; display: inline-block; }
+    .btn-secondary:hover { background: #e6f3f5; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+    th { background: #f4f4f4; }
+    .muted { color: #666; font-size: 0.95rem; }
+  </style>
+</head>
+<body>
+  {% include '_headerDoctor.html' %}
+  {% include '_menuDoctor.html' %}
+
+  <main class="doctor-main">
+    <div class="container">
+      <h1>Radno vreme</h1>
+      <p class="subtitle">Podesavas radno vreme za naredne 2 nedelje (ponedeljak–petak).</p>
+
+      <div class="card">
+        <p class="muted" style="margin-top:0;">
+          Period: <b>{{ start_date|date:"d.m.Y." }}</b> – <b>{{ end_date|date:"d.m.Y." }}</b><br>
+          Ordinacija radi 08–20h. Tvoje radno vreme je 8h. Vikendom nije dozvoljeno.
+        </p>
+
+        <form method="post">
+          {% csrf_token %}
+          <div class="row" style="margin-bottom: 14px;">
+            <div>
+              <label for="week1_shift">Prva nedelja:</label>
+              <select id="week1_shift" name="week1_shift">
+                <option value="FIRST">Prva smena (08:00–16:00)</option>
+                <option value="SECOND">Druga smena (12:00–20:00)</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="week2_shift">Druga nedelja:</label>
+              <select id="week2_shift" name="week2_shift">
+                <option value="FIRST">Prva smena (08:00–16:00)</option>
+                <option value="SECOND">Druga smena (12:00–20:00)</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Sacuvaj</button>
+            <a class="btn btn-secondary" href="{% url 'meds:myWorkTimeTwoWeeks' %}">Pregled</a>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top:0; color:#0f7b8f;">Pregled po danima (pon–pet)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Radno vreme</th>
+              <th>Pauza</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for d in weekdays %}
+              {% with e=existing_map|get_item:d %}
+              <tr>
+                <td>{{ d|date:"d.m.Y." }}</td>
+                {% if e %}
+                  <td>{{ e.startTime|time:"H:i" }} – {{ e.endTime|time:"H:i" }}</td>
+                  <td>{{ e.breakTime|time:"H:i" }}</td>
+                {% else %}
+                  <td>-</td>
+                  <td>-</td>
+                {% endif %}
+              </tr>
+              {% endwith %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </main>
+
+  {% include '_footer.html' %}
+</body>
+</html>

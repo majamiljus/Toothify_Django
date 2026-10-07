@@ -1,0 +1,520 @@
+<!-- Irina Majstorovic 2022/0518 -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin panel</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: url("{% static 'photos/background.png' %}") no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #0f7b8f;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #0f7b8f;
+            color: white;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-approve { background-color: #0f7b8f; color: white; }
+        .btn-reject  { background-color: #c0392b; color: white; }
+
+        .tag {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.8em;
+            color: white;
+        }
+        .tag-wait { background-color: #f1c40f; }
+        .tag-ok   { background-color: #2ecc71; }
+        .tag-no   { background-color: #e74c3c; }
+
+        /* TABOVI */
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .admin-tab {
+            padding: 8px 18px;
+            border-radius: 999px;
+            border: 2px solid #0f7b8f;
+            background: rgba(255,255,255,0.9);
+            color: #0f7b8f;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .admin-tab.active {
+            background: #0f7b8f;
+            color: #ffffff;
+        }
+
+        .admin-section { display: none; }
+        .admin-section.active { display: block; }
+    </style>
+</head>
+<body>
+    {% include '_header.html' %}
+
+    <main>
+        <h1>Admin</h1>
+
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-target="vacations">Odmori</button>
+            <button class="admin-tab" data-target="doctors">Stomatolozi</button>
+            <button class="admin-tab" data-target="content">Podesavanja sajta</button>
+            <button class="admin-tab" data-target="interventions">Intervencije</button>
+        </div>
+
+        <section id="section-vacations" class="admin-section active">
+
+            <div class="card">
+                <h2>Odmori na cekanju</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Doktor</th>
+                            <th>Period</th>
+                            <th>Status</th>
+                            <th>Akcije</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in pending_vacations %}
+                            <tr>
+                                <td>
+                                    {% if item.doctor %}
+                                        {{ item.doctor.name }} {{ item.doctor.surname }}
+                                    {% else %}
+                                        ID doktora: {{ item.vac.idMed }}
+                                    {% endif %}
+                                </td>
+
+                                <td>{{ item.vac.startDate }} – {{ item.vac.endDate }}</td>
+
+                                <td>
+                                    <span class="tag tag-wait">Na cekanju</span>
+                                </td>
+
+                                <td>
+                                    {% if item.vac and item.vac.id %}
+                                        <form method="post" 
+                                              action="{% url 'users:approve_vacation' item.vac.id %}" 
+                                              style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-approve">
+                                                Odobri
+                                            </button>
+                                        </form>
+                                        
+                                        <form method="post" 
+                                              action="{% url 'users:reject_vacation' item.vac.id %}" 
+                                              style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-reject">
+                                                Odbij
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        Nema ID odmora (nije moguće odobriti/odbiti)
+                                    {% endif %}
+                                </td>
+
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4"><b>Nema odmora na cekanju.</b></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>Odobreni odmori</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Doktor</th>
+                            <th>Period</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for v in approved_vacations %}
+                            <tr>
+                                <td>{{ v.idMed.name }} {{ v.idMed.surname }}</td>
+                                <td>{{ v.startDate }} – {{ v.endDate }}</td>
+                                <td><span class="tag tag-ok">Odobren</span></td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="3"><b>Nema odobrenih odmora.</b></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>Odbijeni odmori</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Doktor</th>
+                            <th>Period</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for v in rejected_vacations %}
+                            <tr>
+                                <td>{{ v.idMed.name }} {{ v.idMed.surname }}</td>
+                                <td>{{ v.startDate }} – {{ v.endDate }}</td>
+                                <td><span class="tag tag-no">Odbijen</span></td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="3"><b>Nema odbijenih odmora.</b></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <section id="section-doctors" class="admin-section">
+            <div class="card">
+
+                <h2>Zahtevi za visi nivo specijalizacije</h2>
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Doktor</th>
+                        <th>Trenutni nivo</th>
+                        <th>Trazeni nivo</th>
+                        <th>Datum</th>
+                        <th>Akcije</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for r in pending_spec_requests %}
+                        <tr>
+                        <td>{{ r.med.name }} {{ r.med.surname }}</td>
+                        <td>{{ r.med.level_spec }}</td>
+                        <td><b>{{ r.requested_level }}</b></td>
+                        <td>{{ r.created_at|date:"d.m.Y H:i" }}</td>
+
+                        <td>
+                            <!-- Odobri -->
+                            <form method="post" action="{% url 'users:approve_spec_request' r.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-approve">Odobri</button>
+                            </form>
+
+                            <!-- Odbij -->
+                            <form method="post" action="{% url 'users:reject_spec_request' r.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-reject">Odbij</button>
+                            </form>
+                        </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                        <td colspan="5"><b>Nema zahteva na cekanju.</b></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                <h2>Stomatolozi</h2>
+
+                <p>
+                    <a class="btn btn-approve" href="{% url 'users:create_doctor' %}">
+                        + Dodaj novog doktora
+                    </a>
+                </p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ime i prezime</th>
+                            <th>Email</th>
+                            <th>Telefon</th>
+                            <th>Nivo specijalizacije</th>
+                            <th>Akcije</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in doctors %}
+                            <tr>
+                                <td>{{ d.name }} {{ d.surname }}</td>
+                                <td>{{ d.email }}</td>
+                                <td>{{ d.telephone }}</td>
+                                <td>{{ d.level_spec }}</td>
+                                <td>
+    {% if d.id %}
+        <form method="post"
+              action="{% url 'users:deactivate_doctor' d.id %}"
+              style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-reject">
+                Deaktiviraj
+            </button>
+        </form>
+    {% else %}
+        Nema ID doktora (nije moguce deaktivirati)
+    {% endif %}
+</td>
+
+
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5"><b>Nema unetih doktora.</b></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="section-content" class="admin-section">
+    <div class="card">
+        <h2>Podesavanja sajta</h2>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <p style="margin:0;">
+                Upravljaj obavestenjima koja se prikazuju pacijentima na pocetnoj stranici.
+            </p>
+            <a class="btn btn-approve" href="{% url 'users:add_notification' %}">
+                + Dodaj obavestenje
+            </a>
+        </div>
+
+        <h3>Javna aktuelna obaveštenja</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Naslov</th>
+                    <th>Tekst</th>
+                    <th>Objavio</th>
+                    <th>Datum</th>
+                    <th>Akcije</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if notifications_public %}
+                    {% for n in notifications_public %}
+                        <tr>
+                            <td>{{ n.title }}</td>
+                            <td>{{ n.text }}</td>
+                            <td>
+                                {% if n.author.first_name or n.author.last_name %}
+                                    {{ n.author.first_name }} {{ n.author.last_name }}
+                                {% else %}
+                                    {{ n.author.username }}
+                                {% endif %}
+                            </td>
+                            <td>{{ n.created_at|date:"d.m.Y H:i" }}</td>
+                            <td>
+                                <form method="post" action="{% url 'users:delete_notification' n.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-reject">Obriši</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5">Trenutno nema obavestenja.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+        <br>
+
+        <h3>Interna obavestenja</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Naslov</th>
+                    <th>Tekst</th>
+                    <th>Objavio</th>
+                    <th>Datum</th>
+                    <th>Akcije</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if notifications_staff %}
+                    {% for n in notifications_staff %}
+                        <tr>
+                            <td>{{ n.title }}</td>
+                            <td>{{ n.text }}</td>
+                            <td>
+                                {% if n.author.first_name or n.author.last_name %}
+                                    {{ n.author.first_name }} {{ n.author.last_name }}
+                                {% else %}
+                                    {{ n.author.username }}
+                                {% endif %}
+                            </td>
+                            <td>{{ n.created_at|date:"d.m.Y H:i" }}</td>
+                            <td>
+                                <form method="post" action="/users/admin-panel/notifications/{{ n.id }}/delete/">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-reject">Obrisi</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5">Nema internih obavestenja.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</section>
+    <section id="section-interventions" class="admin-section">
+    <div class="card">
+        <h2>Intervencije</h2>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <p style="margin:0;">
+                Upravljaj tipovima intervencija (naziv, trajanje, cena, nivo).
+            </p>
+            <a class="btn btn-approve" href="{% url 'users:add_intervention' %}">
+                + Dodaj intervenciju
+            </a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Naziv</th>
+                    <th>Trajanje (min)</th>
+                    <th>Cena</th>
+                    <th>Nivo</th>
+                    <th>Akcije</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if interventions %}
+                    {% for i in interventions %}
+                        <tr>
+                            <td>{{ i.description }}</td>
+                            <td>{{ i.duration }}</td>
+                            <td>{{ i.price }}</td>
+                            <td>{{ i.level }}</td>
+                            <td>
+                                <form method="post" action="{% url 'users:delete_intervention' i.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-reject">Obriši</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5"><b>Nema unetih intervencija.</b></td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+    </main>
+
+    {% include '_footer.html' %}
+
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const tabs = document.querySelectorAll(".admin-tab");
+    const sections = document.querySelectorAll(".admin-section");
+
+    function activate(target) {
+        tabs.forEach(t => t.classList.remove("active"));
+        sections.forEach(s => s.classList.remove("active"));
+
+        const btn = document.querySelector(`.admin-tab[data-target="${target}"]`);
+        if (btn) btn.classList.add("active");
+
+        const sec = document.getElementById("section-" + target);
+        if (sec) sec.classList.add("active");
+    }
+
+    tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            const target = tab.getAttribute("data-target");
+            activate(target);
+            history.replaceState(null, "", "#section-" + target);
+        });
+    });
+
+    if (window.location.hash && window.location.hash.startsWith("#section-")) {
+        const target = window.location.hash.replace("#section-", "");
+        activate(target);
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!-- Irina Majstorovic 2022/0518 -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dodaj intervenciju</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: url("{% static 'photos/background.png' %}") no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #0f7b8f;
+            margin-top: 10px;
+        }
+
+        .admin-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 10px auto 25px;
+        }
+
+        .admin-tab {
+            padding: 10px 24px;
+            border-radius: 999px;
+            border: 2px solid #0f7b8f;
+            background: rgba(255,255,255,0.9);
+            color: #0f7b8f;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .admin-tab.active {
+            background: #0f7b8f;
+            color: #ffffff;
+        }
+
+        .admin-section {
+            max-width: 900px;
+            margin: 0 auto 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px 30px 30px;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+            margin-top: 15px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #0f7b8f;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            background: #fff;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 10px 22px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        .btn-approve {
+            background-color: #0f7b8f;
+            color: white;
+        }
+
+        .btn-cancel {
+            background-color: #c0392b;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background-color: #0c6270;
+        }
+
+        .btn-cancel:hover {
+            background-color: #a03125;
+        }
+
+        @media (max-width: 768px) {
+            main { padding: 10px; }
+            .card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    {% include '_header.html' %}
+
+    <main>
+        <h1>Admin</h1>
+
+        <div class="admin-tabs">
+            <a href="{% url 'users:admin_dashboard' %}" class="admin-tab">Odmori</a>
+            <a href="{% url 'users:admin_dashboard' %}#section-doctors" class="admin-tab">Stomatolozi</a>
+            <a href="{% url 'users:admin_dashboard' %}#section-content" class="admin-tab">Podesavanja sajta</a>
+            <span class="admin-tab active">Intervencije</span>
+        </div>
+
+        <section class="admin-section">
+            <div class="card">
+                <h2>Dodaj intervenciju</h2>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="form-grid">
+
+                        <div>
+                            <label for="description">Naziv intervencije</label>
+                            <input type="text" id="description" name="description" required>
+                        </div>
+
+                        <div>
+                            <label for="duration">Vreme trajanja</label>
+                            <select id="duration" name="duration" required>
+                                <option value="" selected disabled>Izaberi trajanje</option>
+                                <option value="30">30 minuta</option>
+                                <option value="45">45 minuta</option>
+                                <option value="60">1 sat</option>
+                                <option value="120">2 sata</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="price">Cena (RSD)</label>
+                            <input type="number" id="price" name="price" min="0" step="1" required>
+                        </div>
+
+                        <div>
+                            <label for="level">Nivo (1–4)</label>
+                            <select id="level" name="level" required>
+                                <option value="" selected disabled>Izaberi nivo</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="actions">
+                        <a href="{% url 'users:admin_dashboard' %}#section-interventions" class="btn btn-cancel">Vrati se</a>
+                        <button type="submit" class="btn btn-approve">Sacuvaj</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    {% include '_footer.html' %}
+</body>
+</html>

@@ -1,0 +1,461 @@
+{% load static %}
+<!DOCTYPE html>
+<!-- Maja Miljus 576/22 -->
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>O nama</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+    html, body {
+    margin: 0;
+    padding: 0;
+    }
+
+    body {
+        display: flex;           
+        flex-direction: column;  
+        min-height: 100vh;       
+        background: url("{% static 'photos/background.png' %}") no-repeat center center fixed;
+        background-size: cover;
+        font-family: Arial, sans-serif;
+    }
+
+    main {
+        flex: 1;
+        display: block; 
+        padding: 40px;
+    }
+
+    .header-section {
+        position: relative;
+        width: 100%;
+        height: 30vh;
+        background: url("{% static 'photos/dentist-bg.jpg' %}") center/cover no-repeat;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        overflow: hidden;
+    }
+
+    .header-section::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+    }
+
+    .header-section .content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 200px; 
+    width: 90%;
+    max-width: 1500px;
+    margin: 0 auto; 
+    }
+
+    .header-section .left h1 {
+        font-size: clamp(3em, 6vw, 6em);
+        font-weight: 900;
+        text-transform: uppercase;
+        line-height: 1.1;
+        letter-spacing: 2px;
+        margin: 0; 
+    }
+
+    .header-section .right {
+        max-width: 600px; 
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .header-section .right p {
+        font-size: clamp(0.8em, 1vw, 1.4em); 
+        line-height: 1.4;
+        color: #f1f1f1;
+        margin: 10px 0; 
+        word-wrap: break-word;
+    }
+
+    .about-page-us-area {
+        padding: 60px 0;
+    }
+
+    .search-bar-container {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 10px;       
+        width: 100%;
+        position: relative;        
+        z-index: 3;                
+    }
+
+    .search-bar-container input {
+        padding: 12px 14px;        
+        font-size: 1em;
+        width: 250px;
+        max-width: 100%;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        background: #fff;        
+    }
+
+    .carousel-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    text-align: center;
+    min-height: 700px; 
+}
+
+    .carousel {
+        display: flex;
+        gap: 30px;
+        transition: transform 0.4s ease;
+    }
+
+    .carousel-controls {
+        margin-top: 15px;
+    }
+
+    .carousel-controls button {
+        padding: 10px 20px;
+         top: 50%;   
+        font-size: 1.5em;
+        margin: 0 10px;
+        cursor: pointer;
+    }
+
+    .carousel-controls button:disabled {
+        opacity: 0.4;
+        cursor: default;
+    }
+
+    .doctor-profile {
+        position: relative;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        padding: 30px;
+        text-align: center;
+        flex: 0 0 350px;
+        max-width: 400px;
+        min-height: 500px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .doctor-profile:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
+        z-index: 5;
+    }
+
+    .doctor-profile .img-holder {
+        width: 100%;
+        aspect-ratio: 10 / 8;   
+        min-height: 250px;     
+        margin: 0 auto 20px;    
+        border-radius: 8px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .doctor-profile .img-holder img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; 
+        background-color: #f0f0f0; 
+        display: block;
+    }
+    .doctor-profile .img-holder img[src*="default.jpg"] {
+    transform: scale(1.5); /* zoom in */
+    object-position: center center; /* keep center focus */
+}
+
+    .doctor-rating{
+    position:absolute; 
+    top:10px; 
+    right:12px;
+    background:#ffd400; 
+    color:#000; 
+    font-weight:700;
+    padding:4px 8px; 
+    border-radius:8px;
+    box-shadow:0 2px 6px rgba(0,0,0,.15);
+    z-index:2;
+    font-size: 0.9em;
+    }
+
+    .carousel-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0,0,0,0.5);
+        color: #fff;
+        border: none;
+        font-size: 2em;
+        padding: 10px;
+        cursor: pointer;
+        z-index: 2;
+    }
+
+    .carousel-btn.prev { left: 0; }
+    .carousel-btn.next { right: 0; }
+
+    @media (max-width: 768px) {
+        .doctor-profile { flex: 0 0 280px; }
+        .doctor-profile img { height: 220px; }
+        .doctor-profile h3 { font-size: 1.2em; }
+    }
+
+    .mainmenu-bottom-area {
+        background: #0f7b8f;
+        position: relative;
+        
+    }
+    .header-contact-info ul {
+        display: flex;
+        justify-content: center; 
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+
+    .header-contact-info ul li {
+        display: flex;
+        align-items: center; 
+        border-left: 1px solid #3eadc0;
+        border-right: 1px solid #3eadc0;
+        padding: 8px 35px; 
+    }
+
+    .header-contact-info ul li:first-child {
+        border-left: none;
+        padding-left: 0;
+    }
+
+    .header-contact-info ul li:last-child {
+        border-right: none;
+        padding-right: 0;
+    }
+
+    .header-contact-info ul li .iocn-holder {
+        width: auto; 
+        border-right: 1px solid #19889b;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 15px;
+    }
+
+    .header-contact-info ul li .iocn-holder img {
+        width: 25px; 
+        height: 25px;
+        object-fit: contain; 
+    }
+
+
+    .header-contact-info ul li .iocn-holder span::before {
+        content: none;
+    }
+    .header-contact-info ul li .text-holder{
+        display: table-cell;
+        vertical-align: middle;
+    } 
+    .header-contact-info ul li .text-holder {
+        padding-left: 15px;
+    }
+    .header-contact-info ul li .text-holder h3 {
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 400;
+        text-transform: none;
+        line-height: 26px;
+        font-family: 'Open Sans', sans-serif;
+    }
+  
+    </style>
+    </head>
+    <body>
+        {% include '_header.html' %}
+        {% include '_menuPatient.html' %}
+   
+    <section class="header-section">
+        <div class="overlay"></div>
+        <div class="content">
+            <div class="left">
+                <h1>UPOZNAJ<br>NAS TIM</h1>
+            </div>
+            <div class="right">
+                <p>U DentaSoft-u verujemo da je svaki osmeh jedinstven.</p>
+                <p>Naš tim stomatologa spaja iskustvo, strpljenje i modernu tehnologiju kako bismo vam pruzili nezan i siguran tretman — od prvog pregleda do završnog sjaja. Hvala vam na poverenju!</p>
+                <p>Vase iskustvo nam mnogo znaci — ostavite recenziju i pomozite drugima da nas upoznaju.</p>
+            </div>
+        </div>
+    </section>
+
+ 
+    <main class="about-page-us-area">
+        <div class="container">
+            <div class="carousel-wrapper">
+             
+                <div class="search-bar-container">
+                    <input type="text" id="doctorSearch" placeholder="Pretrazite doktore po imenu...">
+                </div>
+
+                
+                <div class="carousel">
+                    {% for doc in doctors %}
+                <div class="doctor-profile" data-med-id="{{ doc.id }}" style="cursor:pointer;">
+                       
+                        <div class="img-holder">
+                            <img src="{{ doc.image.url }}" alt="{{ doc.name }} {{ doc.surname }}">
+                        </div>
+                       
+                        <p class="doctor-rating">
+                        
+                                {{ doc.avg_rating_display }}
+                           
+                        </p>
+
+                        <h3 class="doctor-name">{{ doc.name }} {{ doc.surname }}</h3>
+                        <p>{{ doc.description }}</p>  
+                        <p><strong>Email:</strong> <a href="mailto:{{ doc.email }}">{{ doc.email }}</a></p>
+                        <p><strong>Telefon:</strong> <a href="tel:{{ doc.telephone }}">{{ doc.telephone }}</a></p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+             
+                <div class="carousel-controls">
+                    <button class="carousel-btn prev" disabled>&#10094;</button>
+                    <button class="carousel-btn next">&#10095;</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+   
+    <header class="mainmenu-bottom-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="header-contact-info">
+                        <ul>
+                            <li>
+                                <div class="iocn-holder">
+                                    <img src="{% static 'photos/location.png' %}" alt="Location" />
+                                </div>
+                                <div class="text-holder">
+                                    <h3>Bulevar Kralja Aleksandra 73, Beograd</h3>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="iocn-holder">
+                                    <img src="{% static 'photos/letter.png' %}" alt="Email" />
+                                </div>
+                                <div class="text-holder">
+                                    <h3>support_center@dentalsoft.com</h3>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="iocn-holder">
+                                    <img src="{% static 'photos/clock.png' %}" alt="Working Hours" />
+                                </div>
+                                <div class="text-holder">
+                                    <h3>Svakog radnog dana 08-20h</h3>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+{% include '_footer.html' %}
+
+    <script>
+    const carousel = document.querySelector('.carousel');
+    const allCards = Array.from(document.querySelectorAll('.doctor-profile')); // sve kartice
+    const prevBtn = document.querySelector('.carousel-btn.prev');
+    const nextBtn = document.querySelector('.carousel-btn.next');
+
+    let index = 0;
+    const gap = 30;
+    const cardWidth = allCards[0].offsetWidth;
+    const containerWidth = carousel.parentElement.offsetWidth;
+    const visibleCount = Math.floor(containerWidth / (cardWidth + gap));
+
+    let visibleCards = [...allCards];
+
+    function updateCarousel() {
+    const maxIndex = Math.max(visibleCards.length - visibleCount, 0);
+
+    // Ako nema kartica, uvek index = 0
+    if (visibleCards.length === 0) {
+        index = 0;
+        carousel.style.transform = `translateX(0px)`;
+    } else {
+        if (index > maxIndex) index = maxIndex;
+        if (index < 0) index = 0;
+        carousel.style.transform = `translateX(${-index * (cardWidth + gap)}px)`;
+    }
+
+    prevBtn.disabled = index === 0 || visibleCards.length === 0;
+    nextBtn.disabled = index >= maxIndex || visibleCards.length === 0;
+}
+
+
+    prevBtn.addEventListener('click', () => {
+        index--;
+        updateCarousel();
+    });
+
+    nextBtn.addEventListener('click', () => {
+        index++;
+        updateCarousel();
+    });
+
+   
+    updateCarousel();
+
+
+    const searchInput = document.getElementById('doctorSearch');
+    searchInput.addEventListener('input', function() {
+        const filter = searchInput.value.toLowerCase();
+
+        visibleCards = allCards.filter(card => {
+            const name = card.querySelector('.doctor-name').textContent.toLowerCase();
+            const match = name.includes(filter);
+            card.style.display = match ? "flex" : "none";
+            return match;
+        });
+
+    
+        index = 0;
+        updateCarousel();
+    });
+
+    document.querySelectorAll('.doctor-profile').forEach(card => {
+        card.addEventListener('click', () => {
+            const idMed = card.dataset.medId;
+            if (idMed) {
+                window.location.href = `{% url 'patients:med' 0 %}`.replace('/0/', `/${idMed}/`);
+            }
+        });
+    });
+    </script>
+
+</body>
+</html>

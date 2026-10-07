@@ -1,0 +1,258 @@
+<!-- Minja Krivokapić 0615/2022 -->
+ <!-- Maja Miljuš 0576/2022 -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Zakazivanje termina pacijentu</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: url("{% static 'photos/background.png' %}") no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .med-container {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .med-info {
+            flex: 1;
+            font-size: 20px;
+        }
+
+        .med-info h2 {
+            margin: 0 0 20px;
+            text-align: center;
+            color: #0f7b8f;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: bold;
+        }
+
+        select,
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            margin-top: 5px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            height: 42px;
+            box-sizing: border-box;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="date"] {
+            appearance: none;
+            -webkit-appearance: none;
+            background-color: white;
+        }
+
+        select:hover,
+        input[type="date"]:hover,
+        textarea:hover {
+            border-color: #0f7b8f;
+            box-shadow: 0 0 4px rgba(15, 123, 143, 0.3);
+        }
+
+        textarea {
+            resize: none;
+            height: 150px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 1.1em;
+            background: #0f7b8f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background: darkred;
+        }
+
+        .message {
+            background-color: green;
+            color: white;
+            margin-top: 20px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .messageError {
+            background-color: darkred;
+            color: white;
+            margin-top: 20px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .karton-section {
+            margin-top: 20px;
+        }
+
+        .karton-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .karton-row button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background: #0f7b8f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .karton-row button:hover {
+            background: darkred;
+        }
+
+    </style>
+</head>
+<body>
+    {% include '_headerDoctor.html' %}
+    {% include '_menuDoctor.html' %}
+
+    <main>
+        <div class="med-container">
+            <div class="med-info">
+                <h2>Zakazivanje termina pacijentu</h2>
+
+                <form method="post" action="{% url 'meds:addIntervention' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="idPat" value="{{ selected_patient }}">
+
+                    <label for="idPat">Izaberite pacijenta</label>
+                    <select name="idPat" id="idPat" required>
+                        {% for p in patients %}
+                            <option value="{{ p.id }}"
+                                {% if p.id|stringformat:"s" == selected_patient %}selected{% endif %}>
+                                {{ p.name }} {{ p.surname }} ({{ p.email }})
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <div class="karton-section">
+                        <label for="karton">Karton</label>
+                        <div class="karton-row">
+                            <button type="button" id="showKarton">Prikaži karton</button>
+                        </div>
+                    </div>
+
+                    <label for="date">Izaberite datum</label>
+                    <input type="date"
+                           name="date"
+                           id="date"
+                           required
+                           min="{{ startDate|date:'Y-m-d' }}"
+                           max="{{ endDate|date:'Y-m-d' }}"
+                           value="{{ selectedDateValue }}">
+
+                    <label for="time">Izaberite vreme</label>
+                    <select name="time" id="time" required>
+                        {% if not selectedDateValue %}
+                            <option disabled selected>Prvo izaberite datum</option>
+                        {% elif weekend %}
+                            <option disabled selected>Ordinacija ne radi vikendom </option>
+                        {% elif available %}
+                            {% for slot in available %}
+                                <option value="{{ slot }}">{{ slot }}</option>
+                            {% endfor %}
+                        {% else %}
+                            <option disabled selected>Nema slobodnih termina</option>
+                        {% endif %}
+                    </select>
+                    <label for="intervention">Izaberite intervenciju</label>
+                    <select name="idInt" id="intervention" required>
+                        {% for intervention in interventions %}
+                            <option value="{{ intervention.id }}"
+                                {% if intervention.id|stringformat:"s" == selected_intervention %}selected{% endif %}>
+                                {{ intervention.description }} ({{ intervention.duration }} min)
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    {% if message %}
+                        <div class="{% if code == 0 %}message{% else %}messageError{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endif %}
+
+                    <button type="submit">Potvrdi</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    {% include '_footer.html' %}
+</body>
+</html>
+
+<script>
+document.getElementById("showKarton").addEventListener("click", function() {
+    const patientId = document.getElementById("idPat").value;
+    if (!patientId) {
+        alert("Molimo izaberite pacijenta.");
+        return;
+    }
+    window.location.href = `karton/${patientId}`;
+});
+
+document.getElementById("date").addEventListener("change", updateTimeSlots);
+
+document.getElementById("intervention").addEventListener("change", updateTimeSlots);
+
+function updateTimeSlots() {
+    const selectedDate = document.getElementById("date").value;
+    const patientId = document.getElementById("idPat").value;
+    const interventionId = document.getElementById("intervention").value;
+
+    const timeSelect = document.getElementById("time");
+    timeSelect.innerHTML = '<option disabled selected>Prvo izaberite datum i intervenciju</option>';
+
+    if (selectedDate && patientId && interventionId) {
+        window.location.href = "?date=" + selectedDate + "&idPat=" + patientId + "&idInt=" + interventionId;
+    }
+}
+</script>

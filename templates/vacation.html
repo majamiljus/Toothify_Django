@@ -1,0 +1,137 @@
+<!-- Minja Krivokapić 0615/2022 -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+     <title>Odmor</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: url("{% static 'photos/background.png' %}") no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-bottom: 80px;
+            padding-top: 40px;
+        }
+
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            text-align: center;
+            width: 50%;
+            max-width: 600px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-size: 1.2em;
+            color: black;
+        }
+
+        input[type="date"] {
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 5px 15px;
+            font-size: 1.2em;
+            background: #0f7b8f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: darkred;
+        }
+
+        .message {
+            background-color: green;
+            color: white;
+            margin-top: 10px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            padding: 10px;
+        }
+
+        .messageError {
+            background-color: darkred;
+            color: white;
+            margin-top: 10px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    {% include '_header.html' %}
+    {% include '_menuDoctor.html' %}
+
+    <main>
+        <div class="form-container">
+            <p style="margin-bottom: 10px;">
+                Preostalo dana godisnjeg ({{ vac_year }}): <b>{{ vac_remaining }}</b> / {{ vac_total }}
+            </p>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <p style="color:red; margin: 6px 0;">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" action="{% url 'meds:vacation' %}">
+                {% csrf_token %}
+                <label for="startDate">Datum pocetka odmora</label>
+                <input type="date" id="startDate" name="startDate" required>
+
+                <label for="endDate">Datum kraja odmora</label>
+                <input type="date" id="endDate" name="endDate" required>
+
+                <button type="submit">Potvrdi</button>
+                {% if message %}
+                    <div class="{% if code == 0 %}message{% else %}messageError{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+    </main>
+
+    {% include '_footer.html' %}
+
+    <script>
+        function setMinDates() {
+            let today = new Date();
+            today.setDate(today.getDate() + 14);
+            let minDate = today.toISOString().split("T")[0];
+            document.getElementById("startDate").setAttribute("min", minDate);
+            document.getElementById("endDate").setAttribute("min", minDate);
+        }
+
+        window.onload = setMinDates;
+    </script>
+</body>
+</html>

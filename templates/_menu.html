@@ -1,0 +1,92 @@
+<!--Minja Krivokapic 0615/2022-->
+<div class="navbar">
+    <div class="nav-toggle" onclick="toggleMenu()">☰</div>
+    <div class="nav-links" id="navLinks">
+        <a href="/index">Početna</a>
+        <a href="/index/about">O nama</a>
+        <a href="#">Usluge</a>
+        <a href="#">Kontakt</a>
+        <a href="myVacations">Moji odmori</a>
+        <a href="vacation">Zakaži odmori</a>
+        <a href="{% url 'users:deactivate' %}">Deaktiviraj nalog</a>
+    
+        {% if user.is_staff %}
+        <a href="{% url 'users:admin_dashboard' %}">Admin panel</a>
+    {% endif %}
+
+    </div>
+</div>
+
+<style>
+    .navbar {
+        background: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 30px;
+        position: relative;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .nav-links {
+        display: flex;
+        justify-content: space-between;
+        flex: 1;
+        gap: 20px;
+    }
+
+    .nav-links a {
+        text-decoration: none;
+        color: #0f7b8f;
+        font-weight: 500;
+        font-size: 1.5em;
+    }
+
+    .nav-links a:hover {
+        color: gray;
+    }
+
+    .nav-toggle {
+        display: none;
+        font-size: 2em;
+        cursor: pointer;
+        user-select: none;
+        margin-left: auto;
+    }
+
+
+    @media (max-width: 768px) {
+        .navbar {
+            justify-content: flex-start;
+        }
+
+        .nav-links {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            position: absolute;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            padding: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .nav-links.show {
+            display: flex;
+        }
+
+        .nav-toggle {
+            display: block;
+        }
+    }
+</style>
+
+<script>
+    function toggleMenu() {
+        document.getElementById("navLinks").classList.toggle("show");
+    }
+</script>

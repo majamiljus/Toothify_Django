@@ -1,0 +1,199 @@
+<!-- Minja Krivokapić 0615/2022 -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Moje intervencije</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: url("{% static 'photos/background.png' %}") no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+
+        form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2px 5px;     
+            min-width: 100px;       
+            min-height: 40px;      
+            border-radius: 10px;
+        }
+        
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+        }
+
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #f4f4f4;
+        }
+
+        .approved { background-color: #ccffcc !important; }
+        .declined { background-color: #ffcccc !important; }
+
+        button {
+            padding: 5px 15px;
+            font-size: 1.1em;
+            background: #0f7b8f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        button:hover { background: darkred; }
+        button:disabled { background: gray !important; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+{% include '_headerDoctor.html' %}
+{% include '_menuDoctor.html' %}
+
+<main>
+
+
+    <form method="get" id="filterForm">
+        <label for="day">Dan:</label>
+        <select name="day" id="day">
+            <option value="">Svi</option>
+            {% for num, name in days %}
+                <option value="{{ num }}" {% if num|stringformat:"s" == selectedDay %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="month">Mesec:</label>
+        <select name="month" id="month">
+            <option value="">Svi</option>
+            {% for num, name in months %}
+                <option value="{{ num }}" {% if num|stringformat:"s" == selectedMonth %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="year">Godina:</label>
+        <select name="year" id="year">
+            <option value="">Sve</option>
+            {% for y in years %}
+                <option value="{{ y }}" {% if y|stringformat:"s" == selectedYear %}selected{% endif %}>{{ y }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="status">Status:</label>
+        <select name="status" id="status">
+            <option value="">Svi</option>
+            <option value="Zakazan" {% if selectedStatus == "Zakazan" %}selected{% endif %}>Zakazan</option>
+            <option value="Završen" {% if selectedStatus == "Završen" %}selected{% endif %}>Završen</option>
+            <option value="Otkazan" {% if selectedStatus == "Otkazan" %}selected{% endif %}>Otkazan</option>
+        </select>
+
+        <button type="submit">Filtriraj</button>
+
+        <button type="button" id="show-all-btn">Prikazi sve</button>
+
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("show-all-btn").addEventListener("click", function() {
+                window.location.href = "{% url 'patients:myInterventions' %}";
+            });
+        });
+        </script>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Pacijent</th>
+                <th>Email</th>
+                <th>Telefon</th>
+                <th>Intervencija</th>
+                <th>Datum</th>
+                <th>Pocetak</th>
+                <th>Kraj</th>
+                <th>Status</th>
+                <th>Odradjen termin</th>
+                <th>Karton</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for intervention in myInterventions %}
+                <tr class="
+                    {% if intervention.status == 'Završen' %}approved
+                    {% elif intervention.status == 'Otkazan' %}declined
+                    {% endif %}
+                ">
+                    <td>{{ intervention.patient }}</td>
+                    <td>{{ intervention.email }}</td>
+                    <td>{{ intervention.telephone }}</td>
+                    <td>{{ intervention.interventionName }}</td>
+                    <td>{{ intervention.date }}</td>
+                    <td>{{ intervention.start }}</td>
+                    <td>{{ intervention.end }}</td>
+                    <td class="{% if intervention.status == 'Zakazan' %}bg-yellow
+                        {% elif intervention.status == 'Završen' %}bg-green
+                        {% elif intervention.status == 'Otkazan' %}bg-red{% endif %}">
+                        {{ intervention.status }}
+                    </td>
+                   
+                    <td>
+                        {% if intervention.status == "Zakazan" %}
+                            <form method="post" action="{% url 'meds:confirmIntervention' intervention.id %}" style="display:inline-block;">
+                                {% csrf_token %}
+                                <button type="submit" style="background:green;color:white;">Odradjen</button>
+                            </form>
+                            <form method="post" action="{% url 'meds:cancelIntervention' intervention.id %}" style="display:inline-block;">
+                                {% csrf_token %}
+                                <button type="submit" style="background:red;color:white;">Otkaži</button>
+                            </form>
+                        {% else %}
+                            <span>-</span>
+                        {% endif %}
+                    </td>
+
+
+                   
+                    <td>            
+                        <form method="get" action="{% url 'meds:editKarton' intervention.idPat %}">
+                            <input type="hidden" name="from" value="myInterventionsMeds">
+                            <button type="submit">Izmeni</button>
+                        </form>
+                    </td>
+
+                </tr>
+            {% empty %}
+                <tr><td colspan="10"><b>Nema intervencija.</b></td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+
+</main>
+
+{% include '_footer.html' %}
+</body>
+</html>

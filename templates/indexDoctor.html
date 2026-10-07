@@ -1,0 +1,190 @@
+<!-- Irina Majstorovic 0518/2022 -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Stomatolog pocetna</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: url("{% static 'photos/background.png' %}") no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .doctor-container {
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0f7b8f;
+            margin-bottom: 6px;
+        }
+
+        .doctor-subtitle {
+            text-align: center;
+            color: #555;
+            margin-bottom: 25px;
+        }
+
+        /* TAB dugmad kao kod Admina */
+        .doctor-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .doctor-tab {
+            padding: 10px 24px;
+            border-radius: 999px;
+            border: 2px solid #0f7b8f;
+            background: rgba(255,255,255,0.9);
+            color: #0f7b8f;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .doctor-tab.active {
+            background: #0f7b8f;
+            color: #ffffff;
+        }
+
+       .doctor-grid {
+            display: flex;
+            flex-wrap: wrap;      
+            justify-content: flex-start; 
+            gap: 20px;
+        }
+
+       .card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 20px 22px 24px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: calc((100% - 40px) / 3); 
+            box-sizing: border-box;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: #0f7b8f;
+        }
+
+        .card p {
+            margin: 0 0 16px;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: none;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background-color: #0f7b8f;
+            color: #fff;
+        }
+
+        @media (max-width: 900px) {
+            .doctor-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include '_headerDoctor.html' %}
+
+    <main class="doctor-main">
+        <div class="doctor-container">
+            <h1>Dobrodošli, doktore</h1>
+            <p class="doctor-subtitle">
+                Ovde mozes da vidis svoje termine, pacijente, odmore, obavestenja, radno vreme i specijalizaciju
+            </p>
+            
+
+            <section class="doctor-grid">
+               <article class="card">
+                   <h3>Moje intervencije</h3>
+                   <p>Pregled termina po danima, status intervencija i podaci o pacijentima.</p>
+                   <a href="{% url 'meds:myInterventionsMeds' %}" class="btn btn-primary">
+                       Pregledaj intervencije
+                   </a>
+               </article>
+
+
+                <article class="card">
+                    <h3>Odmori i zahtevi</h3>
+                    <p>Podnesi zahtev za godisnji odmor i proveri status vec poslatih zahteva.</p>
+                    <a href="{% url 'meds:myVacations' %}" class="btn btn-primary">
+                        Otvori odmore
+                    </a>
+                </article>
+
+                <article class="card">
+                    <h3>Obavestenja</h3>
+                    <p>Interna obavestenja za osoblje i opsta obavestenja ordinacije.</p>
+                    <a href="{% url 'meds:notificationsMeds' %}" class="btn btn-primary">
+                        Pogledaj obavestenja
+                    </a>
+                </article>
+
+
+
+                <article class="card">
+                    <h3>Pacijenti</h3>
+                    <p>Zakazivanje intervencija i izmena kartona pacijenta.</p>
+                    <a href="{% url 'meds:addIntervention' %}" class="btn btn-primary">
+                        Pogledaj pacijente
+                    </a>
+                </article>
+                 <article class="card">
+                    <h3>Specijalizacija</h3>
+                    <p>Unapredite Vasu specijalizaciju i prosirite asortiman intervencija.</p>
+                    <a href="{% url 'meds:request_specialization_upgrade' %}" class="btn btn-primary">
+                        Zatraži veću specijalizaciju
+                    </a>
+                </article>
+                 <article class="card">
+                    <h3>Radno vreme</h3>
+                    <p>Odredite svoje radno vreme u naredne dve nedelje.</p>
+                    <a href="{% url 'meds:setWorkTimeTwoWeeks' %}" class="btn btn-primary">
+                       Izaberi smenu
+                    </a>
+                </article>
+            </section>
+        </div>
+    </main>
+
+    {% include '_footer.html' %}
+</body>
+</html>

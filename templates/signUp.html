@@ -1,0 +1,178 @@
+<!-- Aleksandar Pavlović 0093/2022 -->
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% trans "Registracija" %}</title>
+    <style>
+        :root {
+            --brand: #0f7b8f;
+            --brand-2: #2563eb;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --card: #ffffff;
+            --border: #e5e7eb;
+            --shadow: 0 10px 30px rgba(0,0,0,.12);
+            --link-light-purple: #a78bfa;
+            --link-hover: #7c3aed;
+        }
+
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            background: url("{% static 'photos/background.png' %}") no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .glass {
+            background: rgba(255,255,255,0.9);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            padding: 50px 120px;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--brand);
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        input[type="email"], input[type="text"], input[type="password"] {
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-size: 1em;
+            width: 100%;
+        }
+
+        .errorlist {
+            color: red;
+            font-size: 0.85em;
+            margin-top: 4px;
+        }
+
+        button {
+            padding: 12px 18px;
+            border-radius: 10px;
+            border: 1px solid var(--brand);
+            background: var(--brand);
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background .2s, transform .05s;
+        }
+
+        button:hover { background: #095960; }
+        button:active { transform: translateY(1px); }
+
+        p {
+            margin: 10px 0 0 0;
+            color: var(--muted);
+            font-size: 0.95em;
+        }
+
+        p a {
+            color: var(--link-light-purple);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s, text-shadow 0.2s;
+        }
+
+        p a:hover {
+            color: var(--link-hover);
+            text-shadow: 0 0 4px rgba(167, 139, 250, 0.7);
+        }
+        .password-container {
+    position: relative;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding-right: 40px; /* space for the eye */
+    box-sizing: border-box;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 1.2em;
+    user-select: none;
+}
+    </style>
+</head>
+<body>
+    <div class="glass">
+        <h1>{% trans "Registracija" %}</h1>
+     <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+        {% for field in form %}
+        <div class="password-container">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label><br>
+            <div class="input-wrapper">
+                {{ field }}
+                {% if field.name == "password1" or field.name == "password2" %}
+                    <span class="toggle-password">⌣</span>
+                {% endif %}
+            </div>
+            {% for error in field.errors %}
+                <span class="errorlist">{{ error }}</span>
+            {% endfor %}
+        </div>
+        {% endfor %}
+
+    <button type="submit">{% trans "Kreiraj nalog" %}</button>
+</form>
+
+
+        <p>{% trans "Već imaš nalog?" %} <a href="{% url 'users:login' %}">{% trans "Prijava" %}</a></p>
+        <p><a href="{% url 'guest:guest' %}">{% trans "← Nazad na pocetnu" %}</a></p>
+    </div>
+</body>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.password-container').forEach(container => {
+        const input = container.querySelector('input');
+        const toggle = container.querySelector('.toggle-password');
+        if (toggle && input) {
+            toggle.addEventListener('click', function() {
+                if (input.getAttribute('type') === 'password') {
+                    input.setAttribute('type', 'text');
+                    toggle.textContent = '👁'; 
+                } else {
+                    input.setAttribute('type', 'password');
+                    toggle.textContent = '⌣'; 
+                }
+            });
+        }
+    });
+});
+
+</script>
+</html>

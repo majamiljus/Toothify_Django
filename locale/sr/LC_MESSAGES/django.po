@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-10 00:00+0000\n"
+"PO-Revision-Date: 2025-11-10 00:00+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Serbian\n"
+"Language: sr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+
+
+msgid "Username"
+msgstr "Korisničko ime"
+
+msgid "Password"
+msgstr "Lozinka"
+
+msgid "Password confirmation"
+msgstr "Potvrda lozinke"
+
+msgid "Telephone"
+msgstr "Telefon"
+
+msgid "Your password can't be entirely numeric."
+msgstr "Lozinka ne može biti samo broj."
+
+msgid "Your password must contain at least 8 characters."
+msgstr "Lozinka mora imati najmanje 8 karaktera."

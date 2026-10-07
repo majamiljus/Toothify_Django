@@ -1,0 +1,162 @@
+<!-- Irina Majstorovic 2022/0518 -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dodaj obavestenje – doktor</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: url("{% static 'photos/background.png' %}") no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #0f7b8f;
+            margin-top: 10px;
+        }
+
+        .section-wrapper {
+            max-width: 900px;
+            margin: 0 auto 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px 30px 30px;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+            margin-top: 15px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #0f7b8f;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: #0f7b8f;
+            color: white;
+        }
+
+        .btn-cancel {
+            background-color: #c0392b;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 10px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include '_headerDoctor.html' %}
+
+    <main>
+        <h1>Doktor</h1>
+
+        {% include '_menuDoctor.html' %}
+
+        <section class="section-wrapper">
+            <div class="card">
+                <h2>Dodaj obavestenje</h2>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-grid">
+                        <div>
+                            <label for="title">Naslov obavestenja</label>
+                            <input type="text" id="title" name="title" required>
+                        </div>
+
+                        <div>
+                            <label for="text">Tekst obavestenja</label>
+                            <textarea id="text" name="text" required></textarea>
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" id="for_patients" name="for_patients">
+                            <label for="for_patients" style="margin:0; font-weight:500;">
+                                Vidljivo pacijentima (opšte obavestenje)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <a href="{% url 'meds:notificationsMeds' %}" class="btn btn-cancel">Otkazi</a>
+                        <button type="submit" class="btn btn-primary">Sacuvaj</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    {% include '_footer.html' %}
+</body>
+</html>

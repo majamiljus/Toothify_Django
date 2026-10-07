@@ -1,0 +1,91 @@
+<!-- Irina Majstorovic 0518/2022 -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Radno vreme</title>
+  <style>
+    body { margin:0; min-height:100vh; background:url("{% static 'photos/background.png' %}") no-repeat center center fixed; background-size:cover; font-family: Arial,sans-serif; }
+    main { padding: 20px; }
+    h1,h2 { text-align:center; color:#0f7b8f; }
+
+    .admin-tabs { display:flex; justify-content:center; gap:15px; margin:10px auto 25px; }
+    .admin-tab { padding:10px 24px; border-radius:999px; border:2px solid #0f7b8f; background: rgba(255,255,255,0.9); color:#0f7b8f; font-weight:600; text-decoration:none; }
+    .admin-tab.active { background:#0f7b8f; color:white; }
+
+    .card { max-width:1100px; margin:0 auto; background:rgba(255,255,255,0.95); border-radius:20px; padding:25px; box-shadow:0 8px 18px rgba(0,0,0,0.08); }
+    .topbar { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+    .btn { padding:10px 18px; border-radius:999px; border:none; cursor:pointer; font-weight:600; text-decoration:none; display:inline-block; }
+    .btn-main { background:#0f7b8f; color:white; }
+    .btn-main:hover { background:#0c6270; }
+
+    table { width:100%; border-collapse:collapse; margin-top:15px; }
+    th,td { padding:10px; border-bottom:1px solid #ddd; text-align:left; }
+    th { background:#0f7b8f; color:white; }
+
+    .tag { padding:3px 10px; border-radius:999px; font-weight:600; display:inline-block; }
+    .tag-work { background:#2ecc71; color:white; }
+    .tag-off { background:#bdc3c7; color:#2c3e50; }
+    .tag-vac { background:#e74c3c; color:white; }
+  </style>
+</head>
+<body>
+  {% include '_header.html' %}
+
+  <main>
+    <h1>Admin</h1>
+
+    <div class="admin-tabs">
+      <a href="{% url 'users:admin_dashboard' %}" class="admin-tab">Odmori</a>
+      <a href="{% url 'users:admin_dashboard' %}#section-doctors" class="admin-tab">Stomatolozi</a>
+      <a href="{% url 'users:admin_dashboard' %}#section-content" class="admin-tab">Podešavanja sajta</a>
+      <a href="{% url 'users:admin_worktime' %}" class="admin-tab active">Radno vreme</a>
+      <a href="{% url 'users:admin_interventions' %}" class="admin-tab">Intervencije</a>
+    </div>
+
+    <div class="card">
+      <div class="topbar">
+        <div>
+          <h2 style="margin:0;">Radno vreme — {{ month_str }}</h2>
+          <div style="color:#0f7b8f; font-weight:600;">Pregled po danima (odobreni odmori blokiraju rad)</div>
+        </div>
+        <a class="btn btn-main" href="{% url 'users:worktime_plan' %}">+ Napravi plan</a>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Datum</th>
+            <th>Doktor</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for day in days %}
+          {% for r in day.rows %}
+            <tr>
+              {% if forloop.first %}
+                <td rowspan="{{ day.rows|length }}"><b>{{ day.date|date:"d.m.Y" }}</b></td>
+              {% endif %}
+              <td>{{ r.doc.name }} {{ r.doc.surname }}</td>
+              <td>
+                {% if r.status == "vacation" %}
+                  <span class="tag tag-vac">{{ r.text }}</span>
+                {% elif r.status == "work" %}
+                  <span class="tag tag-work">{{ r.text }}</span>
+                {% else %}
+                  <span class="tag tag-off">{{ r.text }}</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  {% include '_footer.html' %}
+</body>
+</html>

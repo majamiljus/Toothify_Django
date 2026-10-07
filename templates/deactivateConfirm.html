@@ -1,0 +1,16 @@
+<!-- Aleksandar Pavlović 0093/2022 -->
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8"><title>Deaktivacija naloga</title>
+</head>
+<body>
+  <h1>Deaktivacija naloga</h1>
+  <p>Da li sigurno zelis da deaktiviras svoj nalog? Ovu radnju može ponovo aktivirati samo administrator.</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Da, deaktiviraj nalog</button>
+    <a href="{% url 'index:index' %}">Otkaži</a>
+  </form>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!-- Irina Majstorovic 0518/2022 -->
+
+<div class="doctor-tabs-menu">
+    <a href="{% url 'meds:indexDoctor' %}" class="doctor-tab-menu">
+        Pocetna
+    </a>
+    <a href="{% url 'meds:myInterventionsMeds' %}" class="doctor-tab-menu">
+        Intervencije
+    </a>
+    <a href="{% url 'meds:myVacations' %}" class="doctor-tab-menu">
+        Odmor
+    </a>
+
+    <a href="{% url 'meds:notificationsMeds' %}" class="doctor-tab-menu">
+        Obavestenja
+    </a>
+
+    <a href="{% url 'meds:addIntervention' %}" class="doctor-tab-menu">
+       Zakazivanje
+    </a>
+
+    <a href="{% url 'meds:request_specialization_upgrade' %}" class="doctor-tab-menu">
+        Specijalizacija
+    </a>
+
+    <a href="{% url 'meds:myWorkTimeTwoWeeks' %}" class="doctor-tab-menu">
+        Radno vreme
+    </a>
+</div>
+
+<style>
+    .doctor-tabs-menu {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin: 20px auto 30px;
+    }
+
+    .doctor-tab-menu {
+        padding: 10px 24px;
+        border-radius: 999px;
+        border: 2px solid #0f7b8f;
+        background: rgba(255,255,255,0.9);
+        color: #0f7b8f;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: background 0.3s, color 0.3s;
+    }
+
+    .doctor-tab-menu:hover {
+        background: #0f7b8f;
+        color: #ffffff;
+    }
+
+    @media (max-width: 768px) {
+        .doctor-tabs-menu {
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+    }
+</style>

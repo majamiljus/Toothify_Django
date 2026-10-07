@@ -1,0 +1,85 @@
+<!--Irina Majstorovic 0518/2022-->
+{% load static %}
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <title>Napravi plan rada</title>
+  <style>
+    body { margin:0; min-height:100vh; background:url("{% static 'photos/background.png' %}") no-repeat center center fixed; background-size:cover; font-family: Arial,sans-serif; }
+    main { padding: 20px; }
+    h1,h2 { text-align:center; color:#0f7b8f; }
+
+    .card { max-width:900px; margin:0 auto; background:rgba(255,255,255,0.95); border-radius:20px; padding:25px 30px; box-shadow:0 8px 18px rgba(0,0,0,0.08); }
+
+    .row { display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:15px; }
+    label { font-weight:600; color:#0f7b8f; display:block; margin-bottom:6px; }
+    select,input { width:100%; padding:10px; border-radius:10px; border:1px solid #ccc; box-sizing:border-box; }
+
+    .actions { display:flex; justify-content:flex-end; gap:12px; margin-top:20px; }
+    .btn { padding:10px 18px; border-radius:999px; border:none; cursor:pointer; font-weight:600; text-decoration:none; display:inline-block; }
+    .btn-main { background:#0f7b8f; color:white; }
+    .btn-main:hover { background:#0c6270; }
+    .btn-cancel { background:#c0392b; color:white; }
+    .btn-cancel:hover { background:#a03125; }
+
+    .msg { max-width:900px; margin:0 auto 12px; padding:12px 16px; border-radius:12px; font-weight:600; }
+    .msg-error { background:#fdecea; color:#c0392b; }
+    .msg-ok { background:#eafaf1; color:#1e8449; }
+  </style>
+</head>
+<body>
+  {% include '_header.html' %}
+
+  <main>
+    <h1>Admin</h1>
+
+    {% if messages %}
+      {% for m in messages %}
+        <div class="msg {% if m.tags == 'error' %}msg-error{% else %}msg-ok{% endif %}">
+          {{ m }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <div class="card">
+      <h2>Napravi plan rada</h2>
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="row">
+          <div>
+            <label for="doctor_id">Doktor</label>
+            <select id="doctor_id" name="doctor_id" required>
+              {% for d in doctors %}
+                <option value="{{ d.id }}">{{ d.name }} {{ d.surname }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div>
+            <label for="date">Datum</label>
+            <input type="date" id="date" name="date" required>
+          </div>
+
+          <div style="grid-column:1 / -1;">
+            <label for="shift">Radno vreme (smena)</label>
+            <select id="shift" name="shift" required>
+              {% for val, label in shift_choices %}
+                <option value="{{ val }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="actions">
+          <a class="btn btn-cancel" href="{% url 'users:admin_worktime' %}">Vrati se</a>
+          <button type="submit" class="btn btn-main">Sacuvaj</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  {% include '_footer.html' %}
+</body>
+</html>

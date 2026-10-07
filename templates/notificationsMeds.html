@@ -1,0 +1,212 @@
+<!-- Irina Majstorović 0518/2022 -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Obavestenja – doktor</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: url("{% static 'photos/background.png' %}") no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            flex: 1;
+            padding: 30px 20px 40px;
+        }
+
+        .wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0f7b8f;
+            margin: 10px 0 6px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #555;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 22px 26px 26px;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-header-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .card-header-line h2 {
+            margin: 0;
+            color: #0f7b8f;
+            font-size: 1.3rem;
+        }
+
+        .btn-add {
+            padding: 8px 18px;
+            border-radius: 999px;
+            border: 2px solid #0f7b8f;
+            background: #0f7b8f;
+            color: #fff;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .btn-add:hover {
+            background: #0d6777;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        thead {
+            background-color: #0f7b8f;
+            color: white;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        th:first-child {
+            border-top-left-radius: 10px;
+        }
+
+        th:last-child {
+            border-top-right-radius: 10px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-patients {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .badge-staff {
+            background-color: #7f8c8d;
+            color: white;
+        }
+
+        .empty-row {
+            text-align: center;
+            color: #777;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 20px 10px 30px;
+            }
+
+            .card {
+                padding: 18px 16px 20px;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include '_headerDoctor.html' %}
+    {% include '_menuDoctor.html' %}
+
+    <main>
+        <div class="wrapper">
+            <h1>Obaveštenja</h1>
+            <p class="subtitle">
+                Ovde možeš da vidis interna obavestenja za osoblje i opsta obavestenja ordinacije.
+            </p>
+
+            <section class="card">
+                <div class="card-header-line">
+                    <h2>Objavljena obavestenja</h2>
+
+                    <!-- dugme koje vodi na formu za dodavanje -->
+                    <a href="{% url 'meds:addNotificationMeds' %}" class="btn-add">
+                        + Dodaj obavestenje
+                    </a>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Naslov</th>
+                            <th>Tekst</th>
+                            <th>Tip</th>
+                            <th>Objavio</th>
+                            <th>Datum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for n in notifications %}
+                            <tr>
+                                <td>{{ n.title }}</td>
+                                <td>{{ n.text }}</td>
+                                <td>
+                                    {% if n.for_patients %}
+                                        <span class="badge badge-patients">Vidljivo pacijentima</span>
+                                    {% else %}
+                                        <span class="badge badge-staff">Samo osoblje</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if n.author.first_name or n.author.last_name %}
+                                        {{ n.author.first_name }} {{ n.author.last_name }}
+                                    {% else %}
+                                        {{ n.author.username }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ n.created_at|date:"d.m.Y H:i" }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="empty-row">
+                                    Nema obavestenja.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </main>
+
+    {% include '_footer.html' %}
+</body>
+</html>

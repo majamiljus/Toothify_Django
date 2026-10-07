@@ -1,0 +1,103 @@
+
+{% load static %}
+<head>
+  <link rel="icon" type="image/png" href="{% static 'photos/favicon.png' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<div class="header">
+    <img src="{% static 'photos/logo.png' %}" alt="Logo" class="logo">
+    <div class="links">
+
+        {% if request.user.is_authenticated and request.user.is_staff %}
+            {# Admin – nema profil pacijenta, samo „mrtvo“ dugme #}
+            <span class="header-btn">
+                Profil <i class="fa-solid fa-user"></i>
+            </span>
+        {% else %}
+            <a href="/patients/profile" class="header-btn">
+                Profil <i class="fa-solid fa-user"></i>
+            </a>
+        {% endif %}
+
+        <a href="{% url 'users:logout' %}" class="header-btn header-btn-primary">
+            Odjava
+        </a>
+    </div>
+</div>
+
+<style>
+    .header {
+        background-color: white;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 10px;
+        box-sizing: border-box;
+        flex-wrap: wrap;
+    }
+
+    .header .logo {
+        height: 50px;
+    }
+
+    .header .links {
+        display: flex;
+        gap: 20px;
+    }
+
+    .header .links a,
+    .header .links span.header-btn {
+        text-decoration: none;
+        padding: 8px 22px;
+        border-radius: 999px;
+        border: 2px solid #0f7b8f;
+        background: rgba(255,255,255,0.9);
+        color: #0f7b8f;
+        font-weight: 600;
+        font-size: 1.1em;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        backdrop-filter: blur(4px);
+        transition: background 0.2s ease, color 0.2s ease,
+                    box-shadow 0.2s ease, transform 0.1s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+    }
+
+    .header .links a.header-btn-primary {
+        background: #0f7b8f;
+        color: #ffffff;
+    }
+
+    .header .links a:visited {
+        color: inherit;
+    }
+
+    .header .links a:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(15,123,143,0.35);
+        background: #0f7b8f;
+        color: #ffffff;
+    }
+
+    @media (max-width: 768px) {
+        .header {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header .links {
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .header .links a,
+        .header .links span.header-btn {
+            font-size: 1.2em;
+        }
+    }
+</style>
